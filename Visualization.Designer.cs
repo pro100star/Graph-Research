@@ -26,7 +26,6 @@
             this.components = new System.ComponentModel.Container();
             this.button_start = new System.Windows.Forms.Button();
             this.zedGraph = new ZedGraph.ZedGraphControl();
-            this.GraphData = new System.Windows.Forms.ListBox();
             this.SuspendLayout();
             // 
             // button_start
@@ -53,20 +52,11 @@
             this.zedGraph.Size = new System.Drawing.Size(150, 150);
             this.zedGraph.TabIndex = 0;
             // 
-            // GraphData
-            // 
-            this.GraphData.FormattingEnabled = true;
-            this.GraphData.Location = new System.Drawing.Point(125, 47);
-            this.GraphData.Name = "GraphData";
-            this.GraphData.Size = new System.Drawing.Size(204, 160);
-            this.GraphData.TabIndex = 1;
-            // 
             // Visualization
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(442, 288);
-            this.Controls.Add(this.GraphData);
             this.Controls.Add(this.button_start);
             this.Name = "Visualization";
             this.Text = "Graph Research";
@@ -78,7 +68,6 @@
 
         private ZedGraph.ZedGraphControl zedGraph;
         private System.Windows.Forms.Button button_start;
-        private System.Windows.Forms.ListBox GraphData;
     }
 }
 

@@ -23,17 +23,6 @@ namespace WF {
             matrix = new int[0][];
         }
 
-        /*void dfs(int vertex) {
-            used[vertex] = true;
-            for (int i = 0; i < n; ++i) {
-                for (int j = 0; j < n; ++j) {
-                    if (matrix[i][j] == 1) {
-                        dfs(j);
-                    }
-                }
-            }
-        }*/
-
         /// <summary>
         /// Конструктор графа от списка смежности
         /// </summary>
