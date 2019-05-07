@@ -1,11 +1,11 @@
 ﻿namespace WF {
     public struct Pair<T, U> {
         public Pair(T first, U second) {
-            this.first = first;
-            this.second = second;
+            First = first;
+            Second = second;
         }
 
-        public T first;
-        public U second;
+        public T First;
+        public U Second;
     }
 }

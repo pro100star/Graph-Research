@@ -2,25 +2,36 @@
 using System.Collections.Generic;
 
 namespace WF {
-    delegate bool Condition(int k);
+    delegate bool Predicate(int k);
 
     public class Graph {
-        List<List<Pair<int, int>>> data = null; // список смежности, если рёбра имеют целый вес
-        Pair<int, double>[][] double_data = null; // список смежности, если рёбра вещественные
-        int n, m; // количество вершин, ребер
-        Condition condition = (k) => k >= 2; // условие выхода из вершины
+        /// <summary>
+        /// Adjacency list of graph with whole weights
+        /// </summary>
+        List<List<Pair<int, int>>> IntData = null;
+
+        /// <summary>
+        /// Adjacency list of graph with real weights
+        /// </summary>
+        List<List<Pair<int, double>>> DoubleData = null;
+
+        /// <summary>
+        /// Adjacency matrix
+        /// </summary>
+        public readonly int[][] Matrix;
+
+        int CountOfVertex = 0, CountOfEdges = 0;
+        Predicate Condition = (k) => k >= 2;
+
         List<List<int>> markers = new List<List<int>>(); // список маркеров, идущих в вершину, хранится значение, оставшееся до вершины
         List<List<double>> double_markers;
         List<int> counter = new List<int>();
-        int[][] matrix;
-        //bool[] used;
 
         /// <summary>
         /// Конструктор без параметров, создающий пустой граф
         /// </summary>
         public Graph() {
-            n = m = 0;
-            matrix = new int[0][];
+            Matrix = new int[0][];
         }
 
         /// <summary>
@@ -35,167 +46,151 @@ namespace WF {
         /// <param name="m">
         /// Количество ребер
         /// </param>
-        public Graph(List<List<Pair<int, int>>> data, int n, int m) {
-            this.data = new List<List<Pair<int, int>>>(n);
-            counter = new List<int>(n);
-            markers = new List<List<int>>(n);
-            matrix = new int[n][];
-            for (int i = 0; i < n; ++i) {
-                counter.Add(0);
-                this.data.Add(new List<Pair<int, int>>());
-                markers.Add(new List<int>());
+        public Graph(List<List<Pair<int, int>>> data, int n) {
+            if (data.Count != n) {
+                throw new ArgumentOutOfRangeException("Count of vertex is not equal to graph");
             }
+            IntData = new List<List<Pair<int, int>>>(n);
+            Matrix = new int[n][];
             for (int i = 0; i < data.Count; ++i) {
-                this.data[i].AddRange(data[i]);
-                matrix[i] = new int[n];
+                IntData.Add(new List<Pair<int, int>>(data[i].Count));
+                CountOfEdges += data[i].Count;
+                IntData[i].AddRange(data[i]);
+                Matrix[i] = new int[n];
                 for (int j = 0; j < data[i].Count; ++j) {
-                    matrix[i][data[i][j].first] = 1;
+                    Matrix[i][data[i][j].First] = 1;
                 }
             }
-            this.n = n;
-            this.m = m;
+            CountOfVertex = n;
         }
 
-        public Graph(List<List<Pair<int, double>>> data, int n, int m) {
-            double_data = new Pair<int, double>[n][];
-            counter = new List<int>(n);
-            double_markers = new List<List<double>>(n);
-            matrix = new int[n][];
-            for (int i = 0; i < n; ++i) {
-                counter.Add(0);
-                double_markers.Add(new List<double>());
+        public Graph(List<List<Pair<int, double>>> data, int n) {
+            if (data.Count != n) {
+                throw new ArgumentOutOfRangeException("Count of vertex is not equal to graph");
             }
+            DoubleData = new List<List<Pair<int, double>>>(n);
+            Matrix = new int[n][];
             for (int i = 0; i < data.Count; ++i) {
-                double_data[i] = new Pair<int, double>[data[i].Count];
-                matrix[i] = new int[n];
+                DoubleData.Add(new List<Pair<int, double>>(data[i].Count));
+                CountOfEdges += data[i].Count;
+                DoubleData[i].AddRange(data[i]);
+                Matrix[i] = new int[n];
                 for (int j = 0; j < data[i].Count; ++j) {
-                    double_data[i][j] = data[i][j];
-                    matrix[i][double_data[i][j].first] = 1;
+                    Matrix[i][data[i][j].First] = 1;
                 }
             }
-            this.n = n;
-            this.m = m;
+            CountOfVertex = n;
         }
 
-        /// <summary>
-        /// Метод класса для анализа количества маркеров
-        /// </summary>
-        /// <param name="t">
-        /// Время, до которого мы считаем
-        /// </param>
-        /// <returns>
-        /// Возвращает одномерный массив, i-й элемент отвечает количеству маркеров в данную секунду
-        /// </returns>
-        public int[] Research(int t, int m) {
-            if (double_data == null) {
-                return intResearch(t, m);
+        bool StrongConnectivityCheck() {
+            return true;
+        }
+        
+        public int[] GetCountOfMarkers(int Time, int CountOfMarkersToGo) {
+            if (DoubleData == null) {
+                return GetCountOfMarkersWhole(Time, CountOfMarkersToGo);
             }
-            return doubleResearch(t, m);
+            return GetCountOfMarkersReal(Time, CountOfMarkersToGo);
         }
 
-        /// <summary>
-        /// Запускает новые маркеры, если уже пришло достаточное количество
-        /// </summary>
-        /// <param name="vertex">
-        /// Вершина, которая проверяется
-        /// </param>
-        /// <param name="f">
-        /// Условие выполнения
-        /// </param>
-        /// <returns>
-        /// Количество запущенных маркеров
-        /// </returns>
-        int Update(int vertex, bool f) {
-            if (double_data == null) {
-                return intUpdate(vertex, f);
+        int[] GetCountOfMarkersWhole(int Time, int CountOfMarkersToGo) {
+            if (Time <= 0) {
+                throw new ArgumentOutOfRangeException(@"Invalid value of the time, it can't be \leq 0");
             }
-            return doubleUpdate(vertex, f);
-        }
+            if (CountOfMarkersToGo < 0) {
+                throw new ArgumentOutOfRangeException(@"Invalid value of count of markers to go, it can't be less than 0");
+            }
+            Condition = (k) => k > CountOfMarkersToGo;
+            int[] Result = new int[Time];
+            int[] Counter = new int[CountOfVertex];
+            List<List<int>> Markers = new List<List<int>>(CountOfVertex);
+            for (int i = 0; i < CountOfVertex; ++i) {
+                Markers.Add(new List<int>());
+            }
+            for (int i = 0; i < CountOfVertex; ++i) {
+                for (int j = 0; j < IntData[i].Count; ++j) {
+                    Markers[IntData[i][j].First].Add(IntData[i][j].Second);
+                }
+                Counter[i] = 0;
+            }
+            int NowCount = CountOfEdges;
 
-        int[] intResearch(int t, int m) {
-            if (t <= 0) {
-                throw new ArgumentOutOfRangeException("Время не может быть отрицательным");
-            }
-            if (m <= 0) {
-                throw new ArgumentOutOfRangeException("Количество маркеров не может быть отрицательным");
-            }
-            condition = (m_counter) => m_counter > m;
-            int[] result = new int[t];
-            int now_count = 0;
-            for (int i = 0; i < data.Count; ++i) {
-                int k = Update(i, true);
-                now_count += k;
-            }
-
-            for (int i = 0; i < t; ++i) {
-                result[i] = now_count;
-                for (int j = 0; j < n; ++j) {
-                    for (int z = 0; z < markers[j].Count; ++z) {
-                        --markers[j][z];
+            for (int i = 1; i < Time; ++i) {
+                Result[i] = NowCount;
+                for (int j = 0; j < CountOfVertex; ++j) {
+                    for (int z = 0; z < Markers[j].Count; ++z) {
+                        --Markers[j][z];
                     }
-                    int c = markers[j].RemoveAll((k) => k == 0);
-                    counter[j] += c;
-                    result[i] -= c;
-                    int count = Update(j, condition(counter[j]));
-                    result[i] += count;
+                    int count = Markers[j].RemoveAll((k) => k == 0);
+                    Counter[j] += count;
+                    Result[i] -= count;
+                    count = Update(j, Condition(Counter[j]), Markers);
+                    Result[i] += count;
                 }
-                now_count = result[i];
+                NowCount = Result[i];
             }
-            return result;
+            return Result;
         }
 
-        int[] doubleResearch(int t, int m) {
-            if (t <= 0) {
-                throw new ArgumentOutOfRangeException("Время не может быть отрицательным");
+        int[] GetCountOfMarkersReal(int Time, int CountOfMarkersToGo) {
+            if (Time <= 0) {
+                throw new ArgumentOutOfRangeException(@"Invalid value of the time, it can't be \leq 0");
             }
-            if (m <= 0) {
-                throw new ArgumentOutOfRangeException("Количество маркеров не может быть отрицательным");
+            if (CountOfMarkersToGo < 0) {
+                throw new ArgumentOutOfRangeException(@"Invalid value of count of markers to go, it can't be less than 0");
             }
-            condition = (m_counter) => m_counter > m;
-            int[] result = new int[t*100];
-            int now_count = 0;
-            for (int i = 0; i < double_data.Length; ++i) {
-                int k = doubleUpdate(i, true);
-                now_count += k;
+            Condition = (count) => count > CountOfMarkersToGo;
+            int[] Result = new int[Time * 100];
+            int[] Counter = new int[CountOfVertex];
+            List<List<double>> Markers = new List<List<double>>(CountOfVertex);
+            for (int i = 0; i < CountOfVertex; ++i) {
+                Markers.Add(new List<double>());
             }
+            for (int i = 0; i < CountOfVertex; ++i) {
+                for (int j = 0; j < DoubleData[i].Count; ++j) {
+                    Markers[DoubleData[i][j].First].Add(DoubleData[i][j].Second);
+                }
+                Counter[i] = 0;
+            }
+            int NowCount = CountOfEdges;
 
-            for (int i = 0; i < t * 100; ++i) {
-                result[i] = now_count;
-                for (int j = 0; j < n; ++j) {
-                    for (int z = 0; z < double_markers[j].Count; ++z) {
-                        double_markers[j][z] -= 0.01;
+            for (int i = 1; i < Result.Length; ++i) {
+                Result[i] = NowCount;
+                for (int j = 0; j < CountOfVertex; ++j) {
+                    for (int z = 0; z < Markers[j].Count; ++z) {
+                        Markers[j][z] -= 0.01;
                     }
-                    int c = double_markers[j].RemoveAll((k) => k < 0.001);
-                    counter[j] += c;
-                    result[i] -= c;
-                    int count = Update(j, condition(counter[j]));
-                    result[i] += count;
+                    int count = Markers[j].RemoveAll((k) => k < 0.00000000001);
+                    Counter[j] += count;
+                    Result[i] -= count;
+                    count = Update(j, Condition(Counter[j]), Markers);
+                    Result[i] += count;
                 }
-                now_count = result[i];
+                NowCount = Result[i];
             }
-            return result;
+            return Result;
         }
 
-        int intUpdate(int vertex, bool f) {
+        int Update(int vertex, bool f, List<List<int>> Markers) {
             if (f) {
-                for (int j = 0; j < data[vertex].Count; ++j) {
-                    int v = data[vertex][j].first;
-                    int w = data[vertex][j].second;
-                    markers[v].Add(w);
+                for (int j = 0; j < IntData[vertex].Count; ++j) {
+                    int v = IntData[vertex][j].First;
+                    int w = IntData[vertex][j].Second;
+                    Markers[v].Add(w);
                 }
-                return data[vertex].Count;
+                return IntData[vertex].Count;
             }
             return 0;
         }
 
-        int doubleUpdate(int vertex, bool f) {
+        int Update(int vertex, bool f, List<List<double>> Markers) {
             if (f) {
-                for (int j = 0; j < double_data[vertex].Length; ++j) {
-                    int v = double_data[vertex][j].first;
-                    double w = double_data[vertex][j].second;
-                    double_markers[v].Add(w);
+                for (int j = 0; j < DoubleData[vertex].Count; ++j) {
+                    int v = DoubleData[vertex][j].First;
+                    double w = DoubleData[vertex][j].Second;
+                    Markers[v].Add(w);
                 }
-                return double_data[vertex].Length;
+                return DoubleData[vertex].Count;
             }
             return 0;
         }
