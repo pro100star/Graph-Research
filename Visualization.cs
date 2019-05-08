@@ -12,6 +12,7 @@ namespace WF {
             InitializeComponent();
             MainLabel.Visible = false;
             GraphData.Visible = false;
+            GraphData.Multiline = true;
             BeginButton.Visible = false;
             TimeLabel.Visible = false;
             EndButton.Visible = false;
@@ -109,22 +110,18 @@ namespace WF {
         }
 
         List<List<Pair<int, int>>> ParseWhole(out int CountOfVertex) {
-            var items = GraphData.Items;
-            if (items.Count == 0) {
+            var graphData = GraphData.Text.Split('\n');
+            if (graphData.Length == 0) {
                 throw new FormatException("Вы ничего не ввели");
             }
-            if (!int.TryParse((string)items[0], out CountOfVertex) || CountOfVertex <= 0) {
+            if (!int.TryParse(graphData[0], out CountOfVertex) || CountOfVertex <= 0) {
                 throw new FormatException("В первой строке должно содержаться колиечество вершин графа, которое обязательно больше нуля");
-            }
-            string[] graphData = new string[items.Count - 1];
-            for (int i = 1; i < items.Count; ++i) {
-                graphData[i - 1] = (string)items[i];
             }
             List<List<Pair<int, int>>> data = new List<List<Pair<int, int>>>(CountOfVertex);
             for (int i = 0; i < CountOfVertex; ++i) {
                 data.Add(new List<Pair<int, int>>());
             }
-            for (int i = 0; i < graphData.Length; ++i) {
+            for (int i = 1; i < graphData.Length; ++i) {
                 string[] tmp = graphData[i].Split(' ');
                 if (tmp.Length != 3) {
                     throw new FormatException($"Строка №{i + 1} имеет неверный формат, повторите ввод");
@@ -144,22 +141,18 @@ namespace WF {
         }
 
         List<List<Pair<int, double>>> ParseReal(out int CountOfVertex) {
-            var items = GraphData.Items;
-            if (items.Count == 0) {
+            var graphData = GraphData.Text.Split('\n');
+            if (graphData.Length == 0) {
                 throw new FormatException("Вы ничего не ввели");
             }
-            if (!int.TryParse((string)items[0], out CountOfVertex) || CountOfVertex <= 0) {
+            if (!int.TryParse(graphData[0], out CountOfVertex) || CountOfVertex <= 0) {
                 throw new FormatException("В первой строке должно содержаться колиечество вершин графа, которое обязательно больше нуля");
-            }
-            string[] graphData = new string[items.Count - 1];
-            for (int i = 1; i < items.Count; ++i) {
-                graphData[i] = (string)items[i];
             }
             List<List<Pair<int, double>>> data = new List<List<Pair<int, double>>>(CountOfVertex);
             for (int i = 0; i < CountOfVertex; ++i) {
                 data.Add(new List<Pair<int, double>>());
             }
-            for (int i = 0; i < graphData.Length; ++i) {
+            for (int i = 1; i < graphData.Length; ++i) {
                 string[] tmp = graphData[i].Split(' ');
                 if (tmp.Length != 3) {
                     throw new FormatException($"Строка №{i + 1} имеет неверный формат, повторите ввод");
@@ -170,7 +163,7 @@ namespace WF {
                 if (!int.TryParse(tmp[1], out int to) || to >= CountOfVertex) {
                     throw new FormatException($"Строка №{i + 1} имеет неверный формат, повторите ввод");
                 }
-                if (!double.TryParse(tmp[2], out double w)) {
+                if (!int.TryParse(tmp[2], out int w)) {
                     throw new FormatException($"Строка №{i + 1} имеет неверный формат, повторите ввод");
                 }
                 data[v].Add(new Pair<int, double>(to, w));

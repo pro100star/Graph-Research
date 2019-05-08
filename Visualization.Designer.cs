@@ -27,7 +27,6 @@
             this.button_start = new System.Windows.Forms.Button();
             this.zedGraph = new ZedGraph.ZedGraphControl();
             this.MainLabel = new System.Windows.Forms.Label();
-            this.GraphData = new System.Windows.Forms.ListBox();
             this.BeginButton = new System.Windows.Forms.Button();
             this.ChooseLabel = new System.Windows.Forms.Label();
             this.Real = new System.Windows.Forms.Button();
@@ -37,6 +36,7 @@
             this.TimeTextBox = new System.Windows.Forms.TextBox();
             this.CountOfMarkersTextBox = new System.Windows.Forms.TextBox();
             this.CountOfMarkersLabel = new System.Windows.Forms.Label();
+            this.GraphData = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // button_start
@@ -71,19 +71,6 @@
             this.MainLabel.Size = new System.Drawing.Size(115, 13);
             this.MainLabel.TabIndex = 1;
             this.MainLabel.Text = "Input the data of graph";
-            // 
-            // GraphData
-            // 
-            this.GraphData.FormattingEnabled = true;
-            this.GraphData.Items.AddRange(new object[] {
-            "1",
-            "0 0 3",
-            "0 0 5",
-            "0 0 7"});
-            this.GraphData.Location = new System.Drawing.Point(167, 97);
-            this.GraphData.Name = "GraphData";
-            this.GraphData.Size = new System.Drawing.Size(120, 95);
-            this.GraphData.TabIndex = 2;
             // 
             // BeginButton
             // 
@@ -166,11 +153,20 @@
             this.CountOfMarkersLabel.TabIndex = 11;
             this.CountOfMarkersLabel.Text = "Input count of markers for go";
             // 
+            // GraphData
+            // 
+            this.GraphData.Location = new System.Drawing.Point(179, 97);
+            this.GraphData.Multiline = true;
+            this.GraphData.Name = "GraphData";
+            this.GraphData.Size = new System.Drawing.Size(100, 107);
+            this.GraphData.TabIndex = 12;
+            // 
             // Visualization
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(442, 288);
+            this.Controls.Add(this.GraphData);
             this.Controls.Add(this.CountOfMarkersLabel);
             this.Controls.Add(this.CountOfMarkersTextBox);
             this.Controls.Add(this.TimeTextBox);
@@ -180,7 +176,6 @@
             this.Controls.Add(this.Real);
             this.Controls.Add(this.ChooseLabel);
             this.Controls.Add(this.BeginButton);
-            this.Controls.Add(this.GraphData);
             this.Controls.Add(this.MainLabel);
             this.Controls.Add(this.button_start);
             this.Name = "Visualization";
@@ -195,7 +190,6 @@
         private ZedGraph.ZedGraphControl zedGraph;
         private System.Windows.Forms.Button button_start;
         private System.Windows.Forms.Label MainLabel;
-        private System.Windows.Forms.ListBox GraphData;
         private System.Windows.Forms.Button BeginButton;
         private System.Windows.Forms.Label ChooseLabel;
         private System.Windows.Forms.Button Real;
@@ -205,6 +199,7 @@
         private System.Windows.Forms.TextBox TimeTextBox;
         private System.Windows.Forms.TextBox CountOfMarkersTextBox;
         private System.Windows.Forms.Label CountOfMarkersLabel;
+        private System.Windows.Forms.TextBox GraphData;
     }
 }
 
