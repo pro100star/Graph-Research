@@ -75,6 +75,11 @@
             // GraphData
             // 
             this.GraphData.FormattingEnabled = true;
+            this.GraphData.Items.AddRange(new object[] {
+            "1",
+            "0 0 3",
+            "0 0 5",
+            "0 0 7"});
             this.GraphData.Location = new System.Drawing.Point(167, 97);
             this.GraphData.Name = "GraphData";
             this.GraphData.Size = new System.Drawing.Size(120, 95);

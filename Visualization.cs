@@ -18,6 +18,9 @@ namespace WF {
             TimeTextBox.Visible = false;
             CountOfMarkersLabel.Visible = false;
             CountOfMarkersTextBox.Visible = false;
+            ChooseLabel.Visible = false;
+            Real.Visible = false;
+            Whole.Visible = false;
         }
 
         private void Start_button(object sender, EventArgs e) {
@@ -58,10 +61,21 @@ namespace WF {
 
         private void BeginButton_Click(object sender, EventArgs e) {
             int CountOfVertex;
-            if (flag) {
-                graph = new Graph(ParseWhole(out CountOfVertex), CountOfVertex);
-            } else {
-                graph = new Graph(ParseReal(out CountOfVertex), CountOfVertex);
+            try {
+                if (flag) {
+                    graph = new Graph(ParseWhole(out CountOfVertex), CountOfVertex);
+                }
+                else {
+                    graph = new Graph(ParseReal(out CountOfVertex), CountOfVertex);
+                }
+            }
+            catch (FormatException ex) {
+                MessageBox.Show(ex.Message);
+                return;
+            }
+            catch (Exception ex) {
+                MessageBox.Show(ex.Message);
+                return;
             }
             MainLabel.Visible = false;
             GraphData.Visible = false;
@@ -96,30 +110,86 @@ namespace WF {
 
         List<List<Pair<int, int>>> ParseWhole(out int CountOfVertex) {
             var items = GraphData.Items;
-            CountOfVertex = (int)items[0];
+            if (items.Count == 0) {
+                throw new FormatException("Вы ничего не ввели");
+            }
+            if (!int.TryParse((string)items[0], out CountOfVertex) || CountOfVertex <= 0) {
+                throw new FormatException("В первой строке должно содержаться колиечество вершин графа, которое обязательно больше нуля");
+            }
             string[] graphData = new string[items.Count - 1];
             for (int i = 1; i < items.Count; ++i) {
-                graphData[i] = (string)items[i];
+                graphData[i - 1] = (string)items[i];
             }
-            List<List<Pair<int, int>>> data = new List<List<Pair<int, int>>>();
+            List<List<Pair<int, int>>> data = new List<List<Pair<int, int>>>(CountOfVertex);
+            for (int i = 0; i < CountOfVertex; ++i) {
+                data.Add(new List<Pair<int, int>>());
+            }
+            for (int i = 0; i < graphData.Length; ++i) {
+                string[] tmp = graphData[i].Split(' ');
+                if (tmp.Length != 3) {
+                    throw new FormatException($"Строка №{i + 1} имеет неверный формат, повторите ввод");
+                }
+                if (!int.TryParse(tmp[0], out int v) || v >= CountOfVertex) {
+                    throw new FormatException($"Строка №{i + 1} имеет неверный формат, повторите ввод");
+                }
+                if (!int.TryParse(tmp[1], out int to) || to >= CountOfVertex) {
+                    throw new FormatException($"Строка №{i + 1} имеет неверный формат, повторите ввод");
+                }
+                if (!int.TryParse(tmp[2], out int w)) {
+                    throw new FormatException($"Строка №{i + 1} имеет неверный формат, повторите ввод");
+                }
+                data[v].Add(new Pair<int, int>(to, w));
+            }
             return data;
         }
 
         List<List<Pair<int, double>>> ParseReal(out int CountOfVertex) {
             var items = GraphData.Items;
-            CountOfVertex = 0;
-            List<List<Pair<int, double>>> data = new List<List<Pair<int, double>>>();
+            if (items.Count == 0) {
+                throw new FormatException("Вы ничего не ввели");
+            }
+            if (!int.TryParse((string)items[0], out CountOfVertex) || CountOfVertex <= 0) {
+                throw new FormatException("В первой строке должно содержаться колиечество вершин графа, которое обязательно больше нуля");
+            }
+            string[] graphData = new string[items.Count - 1];
+            for (int i = 1; i < items.Count; ++i) {
+                graphData[i] = (string)items[i];
+            }
+            List<List<Pair<int, double>>> data = new List<List<Pair<int, double>>>(CountOfVertex);
+            for (int i = 0; i < CountOfVertex; ++i) {
+                data.Add(new List<Pair<int, double>>());
+            }
+            for (int i = 0; i < graphData.Length; ++i) {
+                string[] tmp = graphData[i].Split(' ');
+                if (tmp.Length != 3) {
+                    throw new FormatException($"Строка №{i + 1} имеет неверный формат, повторите ввод");
+                }
+                if (!int.TryParse(tmp[0], out int v) || v >= CountOfVertex) {
+                    throw new FormatException($"Строка №{i + 1} имеет неверный формат, повторите ввод");
+                }
+                if (!int.TryParse(tmp[1], out int to) || to >= CountOfVertex) {
+                    throw new FormatException($"Строка №{i + 1} имеет неверный формат, повторите ввод");
+                }
+                if (!double.TryParse(tmp[2], out double w)) {
+                    throw new FormatException($"Строка №{i + 1} имеет неверный формат, повторите ввод");
+                }
+                data[v].Add(new Pair<int, double>(to, w));
+            }
             return data;
         }
 
         private void EndButton_Click(object sender, EventArgs e) {
-            int.TryParse(TimeTextBox.Text, out int time);
-            int.TryParse(CountOfMarkersTextBox.Text, out int markers_count);
-            TimeLabel.Visible = true;
-            EndButton.Visible = true;
-            TimeTextBox.Visible = true;
-            CountOfMarkersLabel.Visible = true;
-            CountOfMarkersTextBox.Visible = true;
+            if (!int.TryParse(TimeTextBox.Text, out int time) || time <= 0) {
+                throw new FormatException("Время должно быть строго положительным целым числом");
+            }
+            if (!int.TryParse(CountOfMarkersTextBox.Text, out int markers_count) || markers_count < 0) {
+                throw new FormatException("Количество маркеров должно быть неотрицательным целым числом");
+            }
+            TimeLabel.Visible = false;
+            EndButton.Visible = false;
+            TimeTextBox.Visible = false;
+            CountOfMarkersLabel.Visible = false;
+            CountOfMarkersTextBox.Visible = false;
             Controls.Add(zedGraph);
             InitializeZedGraph();
             DrawGraph(graph, time, markers_count);

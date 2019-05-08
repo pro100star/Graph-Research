@@ -7,10 +7,16 @@ namespace WF {
         /// Главная точка входа для приложения.
         /// </summary>
         [STAThread]
+
         static void Main() {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Visualization());
+            try {
+                Application.EnableVisualStyles();
+                Application.SetCompatibleTextRenderingDefault(false);
+                Application.Run(new Visualization());
+            }
+            catch (FormatException ex) {
+                MessageBox.Show(ex.Message);
+            }
         }
     }
 }
