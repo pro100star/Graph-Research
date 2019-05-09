@@ -82,8 +82,61 @@ namespace WF {
             CountOfVertex = n;
         }
 
+        public Graph(List<List<Pair<int, int>>> data) {
+            CountOfVertex = data.Count;
+            IntData = new List<List<Pair<int, int>>>(CountOfVertex);
+            for (int i = 0; i < CountOfVertex; ++i) {
+                IntData.Add(new List<Pair<int, int>>());
+                for (int j = 0; j < data[i].Count; ++j) {
+                    var p = data[i][j];
+                    IntData[i].Add(new Pair<int, int>(p.First, p.Second));
+                } 
+            }
+        }
+
+        public Graph(List<List<Pair<int, double>>> data) {
+            CountOfVertex = data.Count;
+            DoubleData = new List<List<Pair<int, double>>>(CountOfVertex);
+            for (int i = 0; i < CountOfVertex; ++i) {
+                DoubleData.Add(new List<Pair<int, double>>());
+                for (int j = 0; j < data[i].Count; ++j) {
+                    var p = data[i][j];
+                    DoubleData[i].Add(new Pair<int, double>(p.First, p.Second));
+                }
+            }
+        }
+
         bool StrongConnectivityCheck() {
-            return true;
+            int[] times = new int[CountOfVertex];
+            bool[] used = new bool[CountOfVertex];
+            Dfs(0, CreateInvertedGraph(), times, used, 0);
+            Pair<int, int>[] pairs = new Pair<int, int>[CountOfVertex];
+            for (int i = 0; i < CountOfVertex; ++i) {
+                pairs[i] = new Pair<int, int>(times[i], i);
+            }
+            Array.Sort(pairs, (lhs, rhs) => {
+                if (lhs.First > rhs.First) {
+                    return -1;
+                } else if (lhs.First < rhs.First) {
+                    return 1;
+                }
+                if (lhs.Second == rhs.Second) {
+                    return 0;
+                }
+                if (lhs.Second > rhs.Second) {
+                    return -1;
+                }
+                return 1;
+            });
+            List<List<int>> components = new List<List<int>>();
+            used = new bool[CountOfVertex];
+            for (int i = 0; i < CountOfVertex; ++i) {
+                if (!used[i]) {
+                    components.Add(new List<int>());
+                    Dfs(i, used, components[components.Count - 1]);
+                }
+            }
+            return components.Count == 1;
         }
         
         public int[] GetCountOfMarkers(int Time, int CountOfMarkersToGo) {
@@ -193,6 +246,65 @@ namespace WF {
                 return DoubleData[vertex].Count;
             }
             return 0;
+        }
+
+        Graph CreateInvertedGraph() {
+            Graph result = null;
+            if (IntData != null) {
+                List<List<Pair<int, int>>> data = new List<List<Pair<int, int>>>(CountOfVertex);
+                for (int i = 0; i < CountOfVertex; ++i) {
+                    data.Add(new List<Pair<int, int>>());
+                }
+                for (int i = 0; i < CountOfVertex; ++i) {
+                    for (int j = 0; j < IntData[i].Count; ++i) {
+                        var p = IntData[i][j];
+                        data[p.First].Add(new Pair<int, int>(i, p.Second));
+                    }
+                }
+                result = new Graph(data);
+            }
+            else {
+                List<List<Pair<int, double>>> data = new List<List<Pair<int, double>>>(CountOfVertex);
+                for (int i = 0; i < CountOfVertex; ++i) {
+                    data.Add(new List<Pair<int, double>>());
+                }
+                for (int i = 0; i < CountOfVertex; ++i) {
+                    for (int j = 0; j < DoubleData[i].Count; ++i) {
+                        var p = DoubleData[i][j];
+                        data[p.First].Add(new Pair<int, double>(i, p.Second));
+                    }
+                }
+                result = new Graph(data);
+            }
+            return result;
+        }
+
+        public List<List<int>> GetData {
+            get {
+                return null;
+            }
+        }
+
+        void Dfs(int v, Graph graph, int[] times, bool[] used, int counter) {
+            used[v] = true;
+            ++counter;
+            var list = graph.GetData;
+            for (int i = 0; i < list[v].Count; ++i) {
+                if (!used[list[v][i]]) {
+                    Dfs(i, graph, times, used, counter);
+                }
+            }
+            times[v] = counter;
+        }
+
+        void Dfs(int v, bool[] used, List<int> components) {
+            used[v] = true;
+            components.Add(v);
+            for (int i = 0; i < Matrix[v].Length; ++i) {
+                if (Matrix[v][i] != 0 && !used[Matrix[v][i]]) {
+                    Dfs(i, used, components);
+                }
+            }
         }
     }
 }
