@@ -74,6 +74,10 @@ namespace WF {
                 MessageBox.Show(ex.Message);
                 return;
             }
+            catch (ArgumentOutOfRangeException ex) {
+                MessageBox.Show(ex.Message);
+                return;
+            }
             catch (Exception ex) {
                 MessageBox.Show(ex.Message);
                 return;

@@ -62,6 +62,9 @@ namespace WF {
                 }
             }
             CountOfVertex = n;
+            if (!StrongConnectivityCheck()) {
+                throw new ArgumentOutOfRangeException("Граф должен быть связным");
+            }
         }
 
         public Graph(List<List<Pair<int, double>>> data, int n) {
@@ -80,6 +83,9 @@ namespace WF {
                 }
             }
             CountOfVertex = n;
+            if (!StrongConnectivityCheck()) {
+                throw new ArgumentOutOfRangeException("Граф должен быть связным");
+            }
         }
 
         public Graph(List<List<Pair<int, int>>> data) {
@@ -256,7 +262,7 @@ namespace WF {
                     data.Add(new List<Pair<int, int>>());
                 }
                 for (int i = 0; i < CountOfVertex; ++i) {
-                    for (int j = 0; j < IntData[i].Count; ++i) {
+                    for (int j = 0; j < IntData[i].Count; ++j) {
                         var p = IntData[i][j];
                         data[p.First].Add(new Pair<int, int>(i, p.Second));
                     }
@@ -281,7 +287,26 @@ namespace WF {
 
         public List<List<int>> GetData {
             get {
-                return null;
+                List<List<int>> result = new List<List<int>>();
+                for (int i = 0; i < CountOfVertex; ++i) {
+                    result.Add(new List<int>());
+                }
+                if (IntData != null) { 
+                    for (int i = 0; i < IntData.Count; ++i) {
+                        for (int j = 0; j < IntData[i].Count; ++j) {
+                            var p = IntData[i][j];
+                            result[i].Add(p.First);
+                        }
+                    }
+                } else {
+                    for (int i = 0; i < DoubleData.Count; ++i) {
+                        for (int j = 0; j < DoubleData[i].Count; ++j) {
+                            var p = DoubleData[i][j];
+                            result[i].Add(p.First);
+                        }
+                    }
+                }
+                return result;
             }
         }
 
@@ -301,7 +326,7 @@ namespace WF {
             used[v] = true;
             components.Add(v);
             for (int i = 0; i < Matrix[v].Length; ++i) {
-                if (Matrix[v][i] != 0 && !used[Matrix[v][i]]) {
+                if (Matrix[v][i] != 0 && !used[i]) {
                     Dfs(i, used, components);
                 }
             }

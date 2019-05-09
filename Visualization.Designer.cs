@@ -165,7 +165,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(442, 288);
+            this.ClientSize = new System.Drawing.Size(554, 302);
             this.Controls.Add(this.GraphData);
             this.Controls.Add(this.CountOfMarkersLabel);
             this.Controls.Add(this.CountOfMarkersTextBox);
