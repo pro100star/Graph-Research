@@ -22,6 +22,14 @@ namespace WF {
             ChooseLabel.Visible = false;
             Real.Visible = false;
             Whole.Visible = false;
+            _zedGraph_.Visible = false;
+            DataListBox.Visible = false;
+            _zedGraph_.Location = new Point(ClientRectangle.Width / 2, ClientRectangle.Height);
+            MainLabel.Text = "Введите данные о графе.\nВ первой строчке должно содержаться количество вершин.\n" +
+                "В остальных ребра в формате:\n{вершина из которой исходит ребро} {вершина, в которую идёт ребро} {вес ребра}."
+                + "\nВершины нумеруются с нуля.";
+            GraphData.Height = ClientRectangle.Height / 2;
+            GraphData.Width = ClientRectangle.Width / 2;
         }
 
         private void Start_button(object sender, EventArgs e) {
@@ -31,33 +39,22 @@ namespace WF {
             ChooseLabel.Visible = true;
         }
 
-        private void InitializeZedGraph() {
-            zedGraph.Dock = DockStyle.Fill;
-            zedGraph.Location = new Point(0, 0);
-            zedGraph.Name = "zedGraph";
-            zedGraph.ScrollGrace = 0D;
-            zedGraph.ScrollMaxX = 0D;
-            zedGraph.ScrollMaxY = 0D;
-            zedGraph.ScrollMaxY2 = 0D;
-            zedGraph.ScrollMinX = 0D;
-            zedGraph.ScrollMinY = 0D;
-            zedGraph.ScrollMinY2 = 0D;
-            zedGraph.Size = new Size(783, 471);
-            zedGraph.TabIndex = 0;
-        }
-
         private void DrawGraph(Graph graph, int t, int m) {
-            GraphPane graphPane = zedGraph.GraphPane;
-            graphPane.CurveList.Clear();
-
+            GraphPane graphPane = _zedGraph_.GraphPane;
+            graphPane.Title.Text = "graphic";
+            graphPane.XAxis.Title.Text = "Count";
+            graphPane.YAxis.Title.Text = "Time";
             double[] count = Array.ConvertAll(graph.GetCountOfMarkers(t, m), (int value) => (double)value);
             PointPairList points = new PointPairList();
             for (int i = 0; i < count.Length; ++i) {
                 points.Add(i, count[i]);
             }
             LineItem graphic = graphPane.AddCurve("Graphic", points, Color.Blue, SymbolType.None);
-            zedGraph.AxisChange();
-            zedGraph.Invalidate();
+            _zedGraph_.AxisChange();
+        }
+        private void SetSize() {
+            _zedGraph_.Location = new Point(0, 0);
+            _zedGraph_.Size = new Size(ClientRectangle.Width / 2, ClientRectangle.Height);
         }
 
         private void BeginButton_Click(object sender, EventArgs e) {
@@ -187,9 +184,67 @@ namespace WF {
             TimeTextBox.Visible = false;
             CountOfMarkersLabel.Visible = false;
             CountOfMarkersTextBox.Visible = false;
-            Controls.Add(zedGraph);
-            InitializeZedGraph();
             DrawGraph(graph, time, markers_count);
+            DataListBox.Location = new Point(ClientRectangle.Width / 2, 0);
+            DataListBox.Size = new Size(ClientRectangle.Width / 2, ClientRectangle.Height);
+            ChangeDataListBox();
+            DataListBox.Visible = true;
+            _zedGraph_.Visible = true;
+        }
+
+        private void Visualization_Resize(object sender, EventArgs e) {
+            SetSize();
+            BeginButton.Location = new Point(ClientRectangle.Width / 2, ClientRectangle.Height * 3 / 4);
+            button_start.Location = new Point(ClientRectangle.Width * 2 / 5, ClientRectangle.Height * 2 / 5);
+            MainLabel.Location = new Point(ClientRectangle.Width / 4, ClientRectangle.Height / 7);
+            GraphData.Location = new Point(ClientRectangle.Width / 4, ClientRectangle.Height / 3);
+            ChooseLabel.Location = new Point(ClientRectangle.Width * 4 / 9, ClientRectangle.Height / 3);
+            Real.Location = new Point(ClientRectangle.Width / 3, ClientRectangle.Height / 2);
+            Whole.Location = new Point(ClientRectangle.Width * 4 / 7, ClientRectangle.Height / 2);
+            int tmp1 = (ClientRectangle.Height - (GraphData.Height + GraphData.Location.Y)) / 2;
+            int tmp2 = GraphData.Width / 3 + GraphData.Location.X;
+            BeginButton.Location = new Point(tmp2, GraphData.Height + GraphData.Location.Y + tmp1);
+            TimeTextBox.Location = new Point(ClientRectangle.Width / 4, ClientRectangle.Height / 2);
+            int w = CountOfMarkersTextBox.Width;
+            CountOfMarkersTextBox.Location = new Point(ClientRectangle.Width * 3 / 4 - w, ClientRectangle.Height / 2);
+            w = (-TimeTextBox.Location.X + CountOfMarkersTextBox.Location.X + CountOfMarkersTextBox.Width) / 2;
+            EndButton.Location = new Point(w + TimeTextBox.Location.X - EndButton.Width / 2, ClientRectangle.Height * 4 / 5);
+            TimeLabel.Location = new Point(TimeTextBox.Location.X, TimeTextBox.Location.Y - 20);
+            CountOfMarkersLabel.Location = new Point(CountOfMarkersTextBox.Location.X, CountOfMarkersTextBox.Location.Y - 20);
+            DataListBox.Size = new Size(ClientRectangle.Width / 2, ClientRectangle.Height);
+            DataListBox.Location = new Point(ClientRectangle.Width / 2, 0);
+        }
+
+        private void ChangeDataListBox() {
+            DataListBox.Items.Add($"Количество вершин в графе: {graph.CountOfVertex_}.");
+            DataListBox.Items.Add($"Количество ребер в графе: {graph.CountOfEdges_}.");
+            DataListBox.Items.Add($"Ребра графа: ");
+            bool flag = graph.WholeOrReal();
+            if (flag) {
+                int k = 0;
+                foreach (var item in graph.GetWholeData) {
+                    foreach (var edge in item) {
+                        DataListBox.Items.Add(k.ToString() + " " + edge.ToString());
+                    }
+                    ++k;
+                }
+            }
+            else {
+                int k = 0;
+                foreach (var item in graph.GetRealData) {
+                    foreach (var edge in item) {
+                        DataListBox.Items.Add(k.ToString() + " " + edge.ToString());
+                    }
+                    ++k;
+                }
+            }
+            DataListBox.Items.Add($"Количество маркеров,");
+            DataListBox.Items.Add($"необходимое для выхода из вершины: {graph.CountOfMarkers_}.");
+            DataListBox.Items.Add($"Время исследования: {graph.ResearchTime_}.");
+        }
+
+        private void Visualization_Load(object sender, EventArgs e) {
+            Visualization_Resize(sender, e);
         }
     }
 }

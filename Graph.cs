@@ -26,6 +26,8 @@ namespace WF {
         List<List<int>> markers = new List<List<int>>(); // список маркеров, идущих в вершину, хранится значение, оставшееся до вершины
         List<List<double>> double_markers;
         List<int> counter = new List<int>();
+        int ResearchTime = 0;
+        int CountOfMarkers = 0;
 
         /// <summary>
         /// Конструктор без параметров, создающий пустой граф
@@ -159,6 +161,8 @@ namespace WF {
             if (CountOfMarkersToGo < 0) {
                 throw new ArgumentOutOfRangeException(@"Invalid value of count of markers to go, it can't be less than 0");
             }
+            ResearchTime = Time;
+            CountOfMarkers = CountOfMarkersToGo;
             Condition = (k) => k > CountOfMarkersToGo;
             int[] Result = new int[Time];
             int[] Counter = new int[CountOfVertex];
@@ -198,6 +202,8 @@ namespace WF {
             if (CountOfMarkersToGo < 0) {
                 throw new ArgumentOutOfRangeException(@"Invalid value of count of markers to go, it can't be less than 0");
             }
+            ResearchTime = Time;
+            CountOfMarkers = CountOfMarkersToGo;
             Condition = (count) => count > CountOfMarkersToGo;
             int[] Result = new int[Time * 100];
             int[] Counter = new int[CountOfVertex];
@@ -329,6 +335,52 @@ namespace WF {
                 if (Matrix[v][i] != 0 && !used[i]) {
                     Dfs(i, used, components);
                 }
+            }
+        }
+
+        public bool WholeOrReal() {
+            return IntData != null;
+        }
+
+        public List<List<Pair<int, int>>> GetWholeData {
+            get {
+                if (IntData != null) {
+                    return IntData;
+                }
+                throw new ArgumentNullException("Рёбра графа имеют вещественные значения");
+            }
+        }
+
+        public List<List<Pair<int, double>>> GetRealData {
+            get {
+                if (DoubleData != null) {
+                    return DoubleData;
+                }
+                throw new ArgumentNullException("Рёбра графа имеют целые значения");
+            }
+        }
+
+        public int CountOfVertex_ {
+            get {
+                return CountOfVertex;
+            }
+        }
+
+        public int CountOfEdges_ {
+            get {
+                return CountOfEdges;
+            }
+        }
+
+        public int CountOfMarkers_ {
+            get {
+                return CountOfMarkers;
+            }
+        }
+
+        public int ResearchTime_ {
+            get {
+                return ResearchTime;
             }
         }
     }

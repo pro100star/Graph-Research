@@ -25,7 +25,6 @@
         private void InitializeComponent() {
             this.components = new System.ComponentModel.Container();
             this.button_start = new System.Windows.Forms.Button();
-            this.zedGraph = new ZedGraph.ZedGraphControl();
             this.MainLabel = new System.Windows.Forms.Label();
             this.BeginButton = new System.Windows.Forms.Button();
             this.ChooseLabel = new System.Windows.Forms.Label();
@@ -37,6 +36,8 @@
             this.CountOfMarkersTextBox = new System.Windows.Forms.TextBox();
             this.CountOfMarkersLabel = new System.Windows.Forms.Label();
             this.GraphData = new System.Windows.Forms.TextBox();
+            this._zedGraph_ = new ZedGraph.ZedGraphControl();
+            this.DataListBox = new System.Windows.Forms.ListBox();
             this.SuspendLayout();
             // 
             // button_start
@@ -49,28 +50,14 @@
             this.button_start.UseVisualStyleBackColor = true;
             this.button_start.Click += new System.EventHandler(this.Start_button);
             // 
-            // zedGraph
-            // 
-            this.zedGraph.Location = new System.Drawing.Point(0, 0);
-            this.zedGraph.Name = "zedGraph";
-            this.zedGraph.ScrollGrace = 0D;
-            this.zedGraph.ScrollMaxX = 0D;
-            this.zedGraph.ScrollMaxY = 0D;
-            this.zedGraph.ScrollMaxY2 = 0D;
-            this.zedGraph.ScrollMinX = 0D;
-            this.zedGraph.ScrollMinY = 0D;
-            this.zedGraph.ScrollMinY2 = 0D;
-            this.zedGraph.Size = new System.Drawing.Size(150, 150);
-            this.zedGraph.TabIndex = 0;
-            // 
             // MainLabel
             // 
             this.MainLabel.AutoSize = true;
             this.MainLabel.Location = new System.Drawing.Point(164, 58);
             this.MainLabel.Name = "MainLabel";
-            this.MainLabel.Size = new System.Drawing.Size(115, 13);
+            this.MainLabel.Size = new System.Drawing.Size(118, 13);
             this.MainLabel.TabIndex = 1;
-            this.MainLabel.Text = "Input the data of graph";
+            this.MainLabel.Text = " Input the data of graph";
             // 
             // BeginButton
             // 
@@ -161,11 +148,35 @@
             this.GraphData.Size = new System.Drawing.Size(100, 107);
             this.GraphData.TabIndex = 12;
             // 
+            // _zedGraph_
+            // 
+            this._zedGraph_.Location = new System.Drawing.Point(388, 243);
+            this._zedGraph_.Name = "_zedGraph_";
+            this._zedGraph_.ScrollGrace = 0D;
+            this._zedGraph_.ScrollMaxX = 0D;
+            this._zedGraph_.ScrollMaxY = 0D;
+            this._zedGraph_.ScrollMaxY2 = 0D;
+            this._zedGraph_.ScrollMinX = 0D;
+            this._zedGraph_.ScrollMinY = 0D;
+            this._zedGraph_.ScrollMinY2 = 0D;
+            this._zedGraph_.Size = new System.Drawing.Size(182, 130);
+            this._zedGraph_.TabIndex = 13;
+            // 
+            // DataListBox
+            // 
+            this.DataListBox.FormattingEnabled = true;
+            this.DataListBox.Location = new System.Drawing.Point(246, 303);
+            this.DataListBox.Name = "DataListBox";
+            this.DataListBox.Size = new System.Drawing.Size(120, 95);
+            this.DataListBox.TabIndex = 14;
+            // 
             // Visualization
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(554, 302);
+            this.ClientSize = new System.Drawing.Size(582, 398);
+            this.Controls.Add(this.DataListBox);
+            this.Controls.Add(this._zedGraph_);
             this.Controls.Add(this.GraphData);
             this.Controls.Add(this.CountOfMarkersLabel);
             this.Controls.Add(this.CountOfMarkersTextBox);
@@ -180,6 +191,8 @@
             this.Controls.Add(this.button_start);
             this.Name = "Visualization";
             this.Text = "Graph Research";
+            this.Load += new System.EventHandler(this.Visualization_Load);
+            this.Resize += new System.EventHandler(this.Visualization_Resize);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -187,7 +200,7 @@
 
         #endregion
 
-        private ZedGraph.ZedGraphControl zedGraph;
+        //private ZedGraph.ZedGraphControl zedGraph;
         private System.Windows.Forms.Button button_start;
         private System.Windows.Forms.Label MainLabel;
         private System.Windows.Forms.Button BeginButton;
@@ -200,6 +213,8 @@
         private System.Windows.Forms.TextBox CountOfMarkersTextBox;
         private System.Windows.Forms.Label CountOfMarkersLabel;
         private System.Windows.Forms.TextBox GraphData;
+        private ZedGraph.ZedGraphControl _zedGraph_;
+        private System.Windows.Forms.ListBox DataListBox;
     }
 }
 

@@ -7,5 +7,9 @@
 
         public T First;
         public U Second;
+
+        public override string ToString() {
+            return $"{First} {Second}";
+        }
     }
 }
