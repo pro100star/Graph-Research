@@ -10,6 +10,16 @@ namespace WF {
 
         public Visualization() {
             InitializeComponent();
+            MainLabel.Text = "Введите данные о графе.\nВ первой строчке должно содержаться количество вершин.\n" +
+                "В остальных ребра в формате:\n{вершина из которой исходит ребро} {вершина, в которую идёт ребро} {вес ребра}."
+                + "\nВершины нумеруются с нуля.";
+            CountOfMarkersLabel.Text = "Введите количество маркеров,\nнеобходимое для выхода из вершины.";
+            GraphData.Height = ClientRectangle.Height / 2;
+            GraphData.Width = ClientRectangle.Width / 2;
+            Whole.Height = Real.Height;
+        }
+
+        private void SetVisible() {
             MainLabel.Visible = false;
             GraphData.Visible = false;
             GraphData.Multiline = true;
@@ -24,14 +34,6 @@ namespace WF {
             Whole.Visible = false;
             _zedGraph_.Visible = false;
             DataListBox.Visible = false;
-            _zedGraph_.Location = new Point(ClientRectangle.Width / 2, ClientRectangle.Height);
-            MainLabel.Text = "Введите данные о графе.\nВ первой строчке должно содержаться количество вершин.\n" +
-                "В остальных ребра в формате:\n{вершина из которой исходит ребро} {вершина, в которую идёт ребро} {вес ребра}."
-                + "\nВершины нумеруются с нуля.";
-            CountOfMarkersLabel.Text = "Введите количество маркеров,\nнеобходимое для выхода из вершины.";
-            GraphData.Height = ClientRectangle.Height / 2;
-            GraphData.Width = ClientRectangle.Width / 2;
-            Whole.Height = Real.Height;
         }
 
         private void Start_button(object sender, EventArgs e) {
@@ -267,6 +269,7 @@ namespace WF {
 
         private void Visualization_Load(object sender, EventArgs e) {
             Visualization_Resize(sender, e);
+            SetVisible();
         }
     }
 }

@@ -6,12 +6,12 @@ namespace WF {
 
     public class Graph {
         /// <summary>
-        /// Adjacency list of graph with whole weights
+        /// Список смежности графа с целочисленными весами ребёр
         /// </summary>
         List<List<Pair<int, int>>> IntData = null;
 
         /// <summary>
-        /// Adjacency list of graph with real weights
+        /// Список смежности графа с вещественными весами ребёр
         /// </summary>
         List<List<Pair<int, double>>> DoubleData = null;
 
@@ -20,13 +20,46 @@ namespace WF {
         /// </summary>
         public readonly int[][] Matrix;
 
-        int CountOfVertex = 0, CountOfEdges = 0;
+        /// <summary>
+        /// Количество вершин в графе
+        /// </summary>
+        int CountOfVertex = 0;
+
+        /// <summary>
+        /// Количество ребёр в графе
+        /// </summary>
+        int CountOfEdges = 0;
+
+        /// <summary>
+        /// Условие для выхода маркеров из вершины
+        /// </summary>
         Predicate Condition = (k) => k >= 2;
 
-        List<List<int>> markers = new List<List<int>>(); // список маркеров, идущих в вершину, хранится значение, оставшееся до вершины
+        /// <summary>
+        /// Cписок маркеров, идущих в вершину, в котором хранится значение, оставшееся до достижения вершины
+        /// Граф имеет целочисленные веса ребер
+        /// </summary>
+        List<List<int>> markers = new List<List<int>>();
+
+        /// <summary>
+        /// Cписок маркеров, идущих в вершину, в котором хранится значение, оставшееся до достижения вершины
+        /// Граф имеет вещественные веса ребер
+        /// </summary>
         List<List<double>> double_markers;
+
+        /// <summary>
+        /// Количество маркеров в зависимости от времени
+        /// </summary>
         List<int> counter = new List<int>();
+
+        /// <summary>
+        /// Время исследования
+        /// </summary>
         int ResearchTime = 0;
+
+        /// <summary>
+        /// Количество маркеров, необходимое для выхода из вершины
+        /// </summary>
         int CountOfMarkers = 0;
 
         /// <summary>
@@ -40,13 +73,10 @@ namespace WF {
         /// Конструктор графа от списка смежности
         /// </summary>
         /// <param name="data">
-        /// Список смежности
+        /// Список смежности графа с целочисленными ребрами
         /// </param>
         /// <param name="n">
         /// Количество вершин
-        /// </param>
-        /// <param name="m">
-        /// Количество ребер
         /// </param>
         public Graph(List<List<Pair<int, int>>> data, int n) {
             if (data.Count != n) {
@@ -69,6 +99,15 @@ namespace WF {
             }
         }
 
+        /// <summary>
+        /// Конструктор графа от списка смежности
+        /// </summary>
+        /// <param name="data">
+        /// Список смежности графа с вещественными ребрами
+        /// </param>
+        /// <param name="n">
+        /// Количество вершин
+        /// </param>
         public Graph(List<List<Pair<int, double>>> data, int n) {
             if (data.Count != n) {
                 throw new ArgumentOutOfRangeException("Count of vertex is not equal to graph");
@@ -90,6 +129,12 @@ namespace WF {
             }
         }
 
+        /// <summary>
+        /// Конструктор графа от списка смежности с целочисленными весами ребер
+        /// </summary>
+        /// <param name="data">
+        /// Список смежности графа с целочисленными весами ребер
+        /// </param>
         public Graph(List<List<Pair<int, int>>> data) {
             CountOfVertex = data.Count;
             IntData = new List<List<Pair<int, int>>>(CountOfVertex);
@@ -102,6 +147,12 @@ namespace WF {
             }
         }
 
+        /// <summary>
+        /// Конструктор графа от списка смежности с целочисленными весами ребер
+        /// </summary>
+        /// <param name="data">
+        /// Список смежности графа с вещественными весами ребер
+        /// </param>
         public Graph(List<List<Pair<int, double>>> data) {
             CountOfVertex = data.Count;
             DoubleData = new List<List<Pair<int, double>>>(CountOfVertex);
@@ -114,6 +165,12 @@ namespace WF {
             }
         }
 
+        /// <summary>
+        /// Метод для проверки графа на сильную связность
+        /// </summary>
+        /// <returns>
+        /// true, если граф сильно связный, иначе false
+        /// </returns>
         bool StrongConnectivityCheck() {
             int[] times = new int[CountOfVertex];
             bool[] used = new bool[CountOfVertex];
@@ -147,6 +204,18 @@ namespace WF {
             return components.Count == 1;
         }
         
+        /// <summary>
+        /// Метод для получения количества маркеров в зависимости от времени
+        /// </summary>
+        /// <param name="Time">
+        /// Время исследования
+        /// </param>
+        /// <param name="CountOfMarkersToGo">
+        /// Количество маркеров, необходимое для выхода
+        /// </param>
+        /// <returns>
+        /// Массив, в котором хранится количество маркеров в зависимости от времени
+        /// </returns>
         public int[] GetCountOfMarkers(int Time, int CountOfMarkersToGo) {
             if (DoubleData == null) {
                 return GetCountOfMarkersWhole(Time, CountOfMarkersToGo);
@@ -154,6 +223,18 @@ namespace WF {
             return GetCountOfMarkersReal(Time, CountOfMarkersToGo);
         }
 
+        /// <summary>
+        /// Метод для получения количества маркеров в зависимости от времени графа с целочисленными весами ребер
+        /// </summary>
+        /// <param name="Time">
+        /// Время исследования
+        /// </param>
+        /// <param name="CountOfMarkersToGo">
+        /// Количество маркеров, необходимое для выхода
+        /// </param>
+        /// <returns>
+        /// Массив, в котором хранится количество маркеров в зависимости от времени
+        /// </returns>
         int[] GetCountOfMarkersWhole(int Time, int CountOfMarkersToGo) {
             if (Time <= 0) {
                 throw new ArgumentOutOfRangeException(@"Invalid value of the time, it can't be \leq 0");
@@ -195,6 +276,18 @@ namespace WF {
             return Result;
         }
 
+        /// <summary>
+        /// Метод для получения количества маркеров в зависимости от времени графа с вещественными весами ребер
+        /// </summary>
+        /// <param name="Time">
+        /// Время исследования
+        /// </param>
+        /// <param name="CountOfMarkersToGo">
+        /// Количество маркеров, необходимое для выхода
+        /// </param>
+        /// <returns>
+        /// Массив, в котором хранится количество маркеров в зависимости от времени
+        /// </returns>
         int[] GetCountOfMarkersReal(int Time, int CountOfMarkersToGo) {
             if (Time <= 0) {
                 throw new ArgumentOutOfRangeException(@"Invalid value of the time, it can't be \leq 0");
@@ -236,6 +329,22 @@ namespace WF {
             return Result;
         }
 
+        /// <summary>
+        /// Метод для запуска новых маркеров в зависимости от условия f
+        /// </summary>
+        /// <param name="vertex">
+        /// Вершина, которую пытаются обновить
+        /// </param>
+        /// <param name="f">
+        /// Булев флаг, указывающий обновлять вершину или нет
+        /// </param>
+        /// <param name="Markers">
+        /// Список маркеров, который обновляют
+        /// Граф имеет целочисленный вес ребер
+        /// </param>
+        /// <returns>
+        /// Количество вышедших маркеров
+        /// </returns>
         int Update(int vertex, bool f, List<List<int>> Markers) {
             if (f) {
                 for (int j = 0; j < IntData[vertex].Count; ++j) {
@@ -248,6 +357,22 @@ namespace WF {
             return 0;
         }
 
+        /// <summary>
+        /// Метод для запуска новых маркеров в зависимости от условия f
+        /// </summary>
+        /// <param name="vertex">
+        /// Вершина, которую пытаются обновить
+        /// </param>
+        /// <param name="f">
+        /// Булев флаг, указывающий обновлять вершину или нет
+        /// </param>
+        /// <param name="Markers">
+        /// Список маркеров, который обновляют
+        /// Граф имеет вещественный вес ребер
+        /// </param>
+        /// <returns>
+        /// Количество вышедших маркеров
+        /// </returns>
         int Update(int vertex, bool f, List<List<double>> Markers) {
             if (f) {
                 for (int j = 0; j < DoubleData[vertex].Count; ++j) {
@@ -260,6 +385,12 @@ namespace WF {
             return 0;
         }
 
+        /// <summary>
+        /// Метод для получения графа с инвертированными ребрами от текущего графа
+        /// </summary>
+        /// <returns>
+        /// Граф с инвертированными ребрами
+        /// </returns>
         Graph CreateInvertedGraph() {
             Graph result = null;
             if (IntData != null) {
@@ -291,6 +422,9 @@ namespace WF {
             return result;
         }
 
+        /// <summary>
+        /// Свойство для получения матрицы смежности
+        /// </summary>
         public List<List<int>> GetData {
             get {
                 List<List<int>> result = new List<List<int>>();
@@ -316,6 +450,25 @@ namespace WF {
             }
         }
 
+        /// <summary>
+        /// Обход графа в глубину
+        /// </summary>
+        /// <param name="v">
+        /// Вершина в которую пришли сейчас
+        /// </param>
+        /// <param name="graph">
+        /// Граф, который обходят
+        /// </param>
+        /// <param name="times">
+        /// Массив времени окончаний обхода
+        /// </param>
+        /// <param name="used">
+        /// Массив, характеризующий вершины
+        /// true, если уже были в вершине, иначе false
+        /// </param>
+        /// <param name="counter">
+        /// Текущее время обхода
+        /// </param>
         void Dfs(int v, Graph graph, int[] times, bool[] used, int counter) {
             used[v] = true;
             ++counter;
@@ -328,6 +481,19 @@ namespace WF {
             times[v] = counter;
         }
 
+        /// <summary>
+        /// Обход в глубину графа для получения компонент связности
+        /// </summary>
+        /// <param name="v">
+        /// Вершина, в которой находимся сейчас
+        /// </param>
+        /// <param name="used">
+        /// Массив, характеризующий вершины
+        /// true, если уже были в вершине, иначе false
+        /// </param>
+        /// <param name="components">
+        /// Текущая компонента связности
+        /// </param>
         void Dfs(int v, bool[] used, List<int> components) {
             used[v] = true;
             components.Add(v);
@@ -338,10 +504,19 @@ namespace WF {
             }
         }
 
+        /// <summary>
+        /// Метод, определяющий какой тип имеет вес ребер графа
+        /// </summary>
+        /// <returns>
+        /// true, если целочисленный, иначе false
+        /// </returns>
         public bool WholeOrReal() {
             return IntData != null;
         }
 
+        /// <summary>
+        /// Свойство для получения списка смежности графа с целочисленными весами ребер
+        /// </summary>
         public List<List<Pair<int, int>>> GetWholeData {
             get {
                 if (IntData != null) {
@@ -351,6 +526,9 @@ namespace WF {
             }
         }
 
+        /// <summary>
+        /// Свойство для получения списка смежности графа с вещественными весами ребер
+        /// </summary>
         public List<List<Pair<int, double>>> GetRealData {
             get {
                 if (DoubleData != null) {
@@ -360,24 +538,36 @@ namespace WF {
             }
         }
 
+        /// <summary>
+        /// Свойство для получения количества вершин графа
+        /// </summary>
         public int CountOfVertex_ {
             get {
                 return CountOfVertex;
             }
         }
 
+        /// <summary>
+        /// Свойство для получения количества ребер графа
+        /// </summary>
         public int CountOfEdges_ {
             get {
                 return CountOfEdges;
             }
         }
 
+        /// <summary>
+        /// Свойство для получения количества маркеров, необходимых для выхода из вершины в текущем графе
+        /// </summary>
         public int CountOfMarkers_ {
             get {
                 return CountOfMarkers;
             }
         }
 
+        /// <summary>
+        /// Свойство для получения времени исследования графа
+        /// </summary>
         public int ResearchTime_ {
             get {
                 return ResearchTime;
