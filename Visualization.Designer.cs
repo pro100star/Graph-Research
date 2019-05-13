@@ -74,17 +74,17 @@
             this.ChooseLabel.AutoSize = true;
             this.ChooseLabel.Location = new System.Drawing.Point(185, 81);
             this.ChooseLabel.Name = "ChooseLabel";
-            this.ChooseLabel.Size = new System.Drawing.Size(75, 13);
+            this.ChooseLabel.Size = new System.Drawing.Size(167, 13);
             this.ChooseLabel.TabIndex = 4;
-            this.ChooseLabel.Text = "Real or Whole";
+            this.ChooseLabel.Text = "Какой тип имеют ребра графа?";
             // 
             // Real
             // 
             this.Real.Location = new System.Drawing.Point(139, 123);
             this.Real.Name = "Real";
-            this.Real.Size = new System.Drawing.Size(75, 23);
+            this.Real.Size = new System.Drawing.Size(75, 39);
             this.Real.TabIndex = 5;
-            this.Real.Text = "Real";
+            this.Real.Text = "Вещественный";
             this.Real.UseVisualStyleBackColor = true;
             this.Real.Click += new System.EventHandler(this.Real_Click);
             // 
@@ -94,7 +94,7 @@
             this.Whole.Name = "Whole";
             this.Whole.Size = new System.Drawing.Size(75, 23);
             this.Whole.TabIndex = 6;
-            this.Whole.Text = "Whole";
+            this.Whole.Text = "Целый";
             this.Whole.UseVisualStyleBackColor = true;
             this.Whole.Click += new System.EventHandler(this.Whole_Click);
             // 
@@ -103,9 +103,9 @@
             this.TimeLabel.AutoSize = true;
             this.TimeLabel.Location = new System.Drawing.Point(34, 149);
             this.TimeLabel.Name = "TimeLabel";
-            this.TimeLabel.Size = new System.Drawing.Size(127, 13);
+            this.TimeLabel.Size = new System.Drawing.Size(159, 13);
             this.TimeLabel.TabIndex = 7;
-            this.TimeLabel.Text = "Input time of the research";
+            this.TimeLabel.Text = "Введите время исследования";
             // 
             // EndButton
             // 
@@ -136,9 +136,9 @@
             this.CountOfMarkersLabel.AutoSize = true;
             this.CountOfMarkersLabel.Location = new System.Drawing.Point(293, 149);
             this.CountOfMarkersLabel.Name = "CountOfMarkersLabel";
-            this.CountOfMarkersLabel.Size = new System.Drawing.Size(143, 13);
+            this.CountOfMarkersLabel.Size = new System.Drawing.Size(358, 13);
             this.CountOfMarkersLabel.TabIndex = 11;
-            this.CountOfMarkersLabel.Text = "Input count of markers for go";
+            this.CountOfMarkersLabel.Text = "Введите количество маркеров,необходимое для выхода из вершины";
             // 
             // GraphData
             // 

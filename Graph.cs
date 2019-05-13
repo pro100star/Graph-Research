@@ -281,7 +281,7 @@ namespace WF {
                     data.Add(new List<Pair<int, double>>());
                 }
                 for (int i = 0; i < CountOfVertex; ++i) {
-                    for (int j = 0; j < DoubleData[i].Count; ++i) {
+                    for (int j = 0; j < DoubleData[i].Count; ++j) {
                         var p = DoubleData[i][j];
                         data[p.First].Add(new Pair<int, double>(i, p.Second));
                     }
@@ -322,7 +322,7 @@ namespace WF {
             var list = graph.GetData;
             for (int i = 0; i < list[v].Count; ++i) {
                 if (!used[list[v][i]]) {
-                    Dfs(i, graph, times, used, counter);
+                    Dfs(list[v][i], graph, times, used, counter);
                 }
             }
             times[v] = counter;

@@ -28,8 +28,10 @@ namespace WF {
             MainLabel.Text = "Введите данные о графе.\nВ первой строчке должно содержаться количество вершин.\n" +
                 "В остальных ребра в формате:\n{вершина из которой исходит ребро} {вершина, в которую идёт ребро} {вес ребра}."
                 + "\nВершины нумеруются с нуля.";
+            CountOfMarkersLabel.Text = "Введите количество маркеров,\nнеобходимое для выхода из вершины.";
             GraphData.Height = ClientRectangle.Height / 2;
             GraphData.Width = ClientRectangle.Width / 2;
+            Whole.Height = Real.Height;
         }
 
         private void Start_button(object sender, EventArgs e) {
@@ -41,9 +43,9 @@ namespace WF {
 
         private void DrawGraph(Graph graph, int t, int m) {
             GraphPane graphPane = _zedGraph_.GraphPane;
-            graphPane.Title.Text = "graphic";
-            graphPane.XAxis.Title.Text = "Count";
-            graphPane.YAxis.Title.Text = "Time";
+            graphPane.Title.Text = "Зависимость количества маркеров от времени";
+            graphPane.XAxis.Title.Text = "Количество маркеров";
+            graphPane.YAxis.Title.Text = "Время";
             double[] count = Array.ConvertAll(graph.GetCountOfMarkers(t, m), (int value) => (double)value);
             PointPairList points = new PointPairList();
             for (int i = 0; i < count.Length; ++i) {
@@ -111,7 +113,7 @@ namespace WF {
         }
 
         List<List<Pair<int, int>>> ParseWhole(out int CountOfVertex) {
-            var graphData = GraphData.Text.Split('\n');
+            var graphData = GraphData.Text.Split(new char[] {'\n'}, StringSplitOptions.RemoveEmptyEntries);
             if (graphData.Length == 0) {
                 throw new FormatException("Вы ничего не ввели");
             }
@@ -123,7 +125,16 @@ namespace WF {
                 data.Add(new List<Pair<int, int>>());
             }
             for (int i = 1; i < graphData.Length; ++i) {
-                string[] tmp = graphData[i].Split(' ');
+                bool f = true;
+                foreach (char c in graphData[i]) {
+                    if (c != ' ') {
+                        f = false;
+                    }
+                }
+                if (f) {
+                    continue;
+                }
+                string[] tmp = graphData[i].Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                 if (tmp.Length != 3) {
                     throw new FormatException($"Строка №{i + 1} имеет неверный формат, повторите ввод");
                 }
@@ -142,7 +153,7 @@ namespace WF {
         }
 
         List<List<Pair<int, double>>> ParseReal(out int CountOfVertex) {
-            var graphData = GraphData.Text.Split('\n');
+            var graphData = GraphData.Text.Split(new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
             if (graphData.Length == 0) {
                 throw new FormatException("Вы ничего не ввели");
             }
@@ -154,7 +165,17 @@ namespace WF {
                 data.Add(new List<Pair<int, double>>());
             }
             for (int i = 1; i < graphData.Length; ++i) {
-                string[] tmp = graphData[i].Split(' ');
+                bool f = true;
+                foreach (char c in graphData[i]) {
+                    if (c != ' ') {
+                        f = false;
+                        break;
+                    }
+                }
+                if (f) {
+                    continue;
+                }
+                string[] tmp = graphData[i].Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                 if (tmp.Length != 3) {
                     throw new FormatException($"Строка №{i + 1} имеет неверный формат, повторите ввод");
                 }
@@ -164,7 +185,7 @@ namespace WF {
                 if (!int.TryParse(tmp[1], out int to) || to >= CountOfVertex) {
                     throw new FormatException($"Строка №{i + 1} имеет неверный формат, повторите ввод");
                 }
-                if (!int.TryParse(tmp[2], out int w)) {
+                if (!double.TryParse(tmp[2], out double w)) {
                     throw new FormatException($"Строка №{i + 1} имеет неверный формат, повторите ввод");
                 }
                 data[v].Add(new Pair<int, double>(to, w));
@@ -185,8 +206,6 @@ namespace WF {
             CountOfMarkersLabel.Visible = false;
             CountOfMarkersTextBox.Visible = false;
             DrawGraph(graph, time, markers_count);
-            DataListBox.Location = new Point(ClientRectangle.Width / 2, 0);
-            DataListBox.Size = new Size(ClientRectangle.Width / 2, ClientRectangle.Height);
             ChangeDataListBox();
             DataListBox.Visible = true;
             _zedGraph_.Visible = true;
@@ -194,25 +213,28 @@ namespace WF {
 
         private void Visualization_Resize(object sender, EventArgs e) {
             SetSize();
-            BeginButton.Location = new Point(ClientRectangle.Width / 2, ClientRectangle.Height * 3 / 4);
-            button_start.Location = new Point(ClientRectangle.Width * 2 / 5, ClientRectangle.Height * 2 / 5);
-            MainLabel.Location = new Point(ClientRectangle.Width / 4, ClientRectangle.Height / 7);
-            GraphData.Location = new Point(ClientRectangle.Width / 4, ClientRectangle.Height / 3);
-            ChooseLabel.Location = new Point(ClientRectangle.Width * 4 / 9, ClientRectangle.Height / 3);
-            Real.Location = new Point(ClientRectangle.Width / 3, ClientRectangle.Height / 2);
-            Whole.Location = new Point(ClientRectangle.Width * 4 / 7, ClientRectangle.Height / 2);
-            int tmp1 = (ClientRectangle.Height - (GraphData.Height + GraphData.Location.Y)) / 2;
+            int width = ClientRectangle.Width;
+            int height = ClientRectangle.Height;
+            BeginButton.Location = new Point(width / 2, height * 3 / 4);
+            button_start.Location = new Point(width * 2 / 5, height * 2 / 5);
+            MainLabel.Location = new Point(width / 4, height / 7);
+            GraphData.Location = new Point(width / 4, height / 3);
+            Real.Location = new Point(width / 3, height / 2);
+            Whole.Location = new Point(width * 4 / 7, height / 2);
+            int place = (-Whole.Location.X + Real.Location.X + Real.Width) / 2;
+            ChooseLabel.Location = new Point(Whole.Location.X + place - ChooseLabel.Width / 2, height / 3);
+            int tmp1 = (height - (GraphData.Height + GraphData.Location.Y)) / 2;
             int tmp2 = GraphData.Width / 3 + GraphData.Location.X;
             BeginButton.Location = new Point(tmp2, GraphData.Height + GraphData.Location.Y + tmp1);
-            TimeTextBox.Location = new Point(ClientRectangle.Width / 4, ClientRectangle.Height / 2);
+            TimeTextBox.Location = new Point(width / 4, height / 2);
             int w = CountOfMarkersTextBox.Width;
-            CountOfMarkersTextBox.Location = new Point(ClientRectangle.Width * 3 / 4 - w, ClientRectangle.Height / 2);
+            CountOfMarkersTextBox.Location = new Point(width * 3 / 4 - w, height / 2);
             w = (-TimeTextBox.Location.X + CountOfMarkersTextBox.Location.X + CountOfMarkersTextBox.Width) / 2;
-            EndButton.Location = new Point(w + TimeTextBox.Location.X - EndButton.Width / 2, ClientRectangle.Height * 4 / 5);
-            TimeLabel.Location = new Point(TimeTextBox.Location.X, TimeTextBox.Location.Y - 20);
-            CountOfMarkersLabel.Location = new Point(CountOfMarkersTextBox.Location.X, CountOfMarkersTextBox.Location.Y - 20);
-            DataListBox.Size = new Size(ClientRectangle.Width / 2, ClientRectangle.Height);
-            DataListBox.Location = new Point(ClientRectangle.Width / 2, 0);
+            EndButton.Location = new Point(w + TimeTextBox.Location.X - EndButton.Width / 2, height * 4 / 5);
+            TimeLabel.Location = new Point(TimeTextBox.Location.X, TimeTextBox.Location.Y - 30);
+            CountOfMarkersLabel.Location = new Point(CountOfMarkersTextBox.Location.X, CountOfMarkersTextBox.Location.Y - 30);
+            DataListBox.Size = new Size(width / 2, height);
+            DataListBox.Location = new Point(width / 2, 0);
         }
 
         private void ChangeDataListBox() {
