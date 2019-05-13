@@ -13,6 +13,9 @@ namespace WF {
     /// </returns>
     delegate bool Predicate(int k);
 
+    /// <summary>
+    /// Класс, описывающий сильносвязный ориентированный граф
+    /// </summary>
     public class Graph {
         /// <summary>
         /// Список смежности графа с целочисленными весами ребёр
