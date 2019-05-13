@@ -2,6 +2,15 @@
 using System.Collections.Generic;
 
 namespace WF {
+    /// <summary>
+    /// Предикат, принимающий один целочисленный параметр, возвращающий bool
+    /// </summary>
+    /// <param name="k">
+    /// Целочисленный параметр
+    /// </param>
+    /// <returns>
+    /// true или false
+    /// </returns>
     delegate bool Predicate(int k);
 
     public class Graph {
