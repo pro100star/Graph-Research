@@ -5,9 +5,18 @@ using System.Windows.Forms;
 using ZedGraph;
 
 namespace WF {
+    /// <summary>
+    /// Класс, описывающий оконный интерфейс
+    /// </summary>
     public partial class Visualization : Form {
+        /// <summary>
+        /// Исследуемый граф
+        /// </summary>
         Graph graph = null;
 
+        /// <summary>
+        /// Инициализация формы
+        /// </summary>
         public Visualization() {
             InitializeComponent();
             MainLabel.Text = "Введите данные о графе.\nВ первой строчке должно содержаться количество вершин.\n" +
@@ -19,6 +28,9 @@ namespace WF {
             Whole.Height = Real.Height;
         }
 
+        /// <summary>
+        /// Метод для установки изначальной видимости элементов формы
+        /// </summary>
         private void SetVisible() {
             MainLabel.Visible = false;
             GraphData.Visible = false;
@@ -36,6 +48,11 @@ namespace WF {
             DataListBox.Visible = false;
         }
 
+        /// <summary>
+        /// Метод для обработки события нажатия на кнопку Start_button
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Start_button(object sender, EventArgs e) {
             button_start.Visible = false;
             Whole.Visible = true;
@@ -43,6 +60,18 @@ namespace WF {
             ChooseLabel.Visible = true;
         }
 
+        /// <summary>
+        /// Метод, рисующий график зависимости количества маркеров на графе от времени
+        /// </summary>
+        /// <param name="graph">
+        /// Исследуемый граф
+        /// </param>
+        /// <param name="t">
+        /// Время исследования
+        /// </param>
+        /// <param name="m">
+        /// Количество маркеров, необходимое для выхода из вершины
+        /// </param>
         private void DrawGraph(Graph graph, int t, int m) {
             GraphPane graphPane = _zedGraph_.GraphPane;
             graphPane.Title.Text = "Зависимость количества маркеров от времени";
@@ -56,11 +85,20 @@ namespace WF {
             LineItem graphic = graphPane.AddCurve("Graphic", points, Color.Blue, SymbolType.None);
             _zedGraph_.AxisChange();
         }
+
+        /// <summary>
+        /// Метод для установки размера и положения графика
+        /// </summary>
         private void SetSize() {
             _zedGraph_.Location = new Point(0, 0);
             _zedGraph_.Size = new Size(ClientRectangle.Width / 2, ClientRectangle.Height);
         }
 
+        /// <summary>
+        /// Метод для обработки события нажатия на кнопку BeginButton
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void BeginButton_Click(object sender, EventArgs e) {
             int CountOfVertex;
             try {
@@ -93,8 +131,17 @@ namespace WF {
             CountOfMarkersTextBox.Visible = true;
         }
 
+        /// <summary>
+        /// Булево значения, равное true, если веса ребер графа имеют целочисленный тип, иначе false
+        /// </summary>
         bool flag = true;
 
+        /// <summary>
+        /// Метод для обработки события нажатия на кнопку Real
+        /// Т.о., пользователь выбирает граф с вещественными ребрами
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Real_Click(object sender, EventArgs e) {
             Whole.Visible = false;
             Real.Visible = false;
@@ -105,6 +152,12 @@ namespace WF {
             flag = false;
         }
 
+        /// <summary>
+        /// Метод для обработки события нажатия на кнопку Whole
+        /// Т.о., пользователь выбирает граф с целыми ребрами
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Whole_Click(object sender, EventArgs e) {
             Whole.Visible = false;
             Real.Visible = false;
@@ -114,6 +167,15 @@ namespace WF {
             BeginButton.Visible = true;
         }
 
+        /// <summary>
+        /// Метод для обработки данных графа с целочисленными весами ребер
+        /// </summary>
+        /// <param name="CountOfVertex">
+        /// Количество вершин графа
+        /// </param>
+        /// <returns>
+        /// Список смежности графа
+        /// </returns>
         List<List<Pair<int, int>>> ParseWhole(out int CountOfVertex) {
             var graphData = GraphData.Text.Split(new char[] {'\n'}, StringSplitOptions.RemoveEmptyEntries);
             if (graphData.Length == 0) {
@@ -154,6 +216,15 @@ namespace WF {
             return data;
         }
 
+        /// <summary>
+        /// Метод для обработки данных графа с вещественными весами ребер
+        /// </summary>
+        /// <param name="CountOfVertex">
+        /// Количество вершин графа
+        /// </param>
+        /// <returns>
+        /// Список смежности графа
+        /// </returns>
         List<List<Pair<int, double>>> ParseReal(out int CountOfVertex) {
             var graphData = GraphData.Text.Split(new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
             if (graphData.Length == 0) {
@@ -195,6 +266,11 @@ namespace WF {
             return data;
         }
 
+        /// <summary>
+        /// Метод для обработки события нажатия на кнопку EndButton
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void EndButton_Click(object sender, EventArgs e) {
             if (!int.TryParse(TimeTextBox.Text, out int time) || time <= 0) {
                 throw new FormatException("Время должно быть строго положительным целым числом");
@@ -213,6 +289,11 @@ namespace WF {
             _zedGraph_.Visible = true;
         }
 
+        /// <summary>
+        /// Метод, изменяющий положения элементов формы при изменении её размера
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Visualization_Resize(object sender, EventArgs e) {
             SetSize();
             int width = ClientRectangle.Width;
@@ -239,6 +320,9 @@ namespace WF {
             DataListBox.Location = new Point(width / 2, 0);
         }
 
+        /// <summary>
+        /// Метод заполняющий DataListBox, в котором отображаются заданные пользователем данные о графе
+        /// </summary>
         private void ChangeDataListBox() {
             DataListBox.Items.Add($"Количество вершин в графе: {graph.CountOfVertex_}.");
             DataListBox.Items.Add($"Количество ребер в графе: {graph.CountOfEdges_}.");
@@ -267,6 +351,11 @@ namespace WF {
             DataListBox.Items.Add($"Время исследования: {graph.ResearchTime_}.");
         }
 
+        /// <summary>
+        /// Метод, в котором устанавливается начальное состояние формы
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Visualization_Load(object sender, EventArgs e) {
             Visualization_Resize(sender, e);
             SetVisible();
