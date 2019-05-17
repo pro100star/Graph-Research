@@ -38,6 +38,17 @@
             this.GraphData = new System.Windows.Forms.TextBox();
             this._zedGraph_ = new ZedGraph.ZedGraphControl();
             this.DataListBox = new System.Windows.Forms.ListBox();
+            this.deleteALLButton = new System.Windows.Forms.Button();
+            this.deleteButton = new System.Windows.Forms.Button();
+            this.drawEdgeButton = new System.Windows.Forms.Button();
+            this.drawVertexButton = new System.Windows.Forms.Button();
+            this.selectButton = new System.Windows.Forms.Button();
+            this.sheet = new System.Windows.Forms.PictureBox();
+            this.ReadyButton = new System.Windows.Forms.Button();
+            this.graphTypeButton = new System.Windows.Forms.Button();
+            this.textTypeButton = new System.Windows.Forms.Button();
+            this.selectTypeLabel = new System.Windows.Forms.Label();
+            ((System.ComponentModel.ISupportInitialize)(this.sheet)).BeginInit();
             this.SuspendLayout();
             // 
             // button_start
@@ -170,11 +181,119 @@
             this.DataListBox.Size = new System.Drawing.Size(120, 95);
             this.DataListBox.TabIndex = 14;
             // 
+            // deleteALLButton
+            // 
+            this.deleteALLButton.Image = global::WF.Properties.Resources.deleteAll;
+            this.deleteALLButton.Location = new System.Drawing.Point(12, 258);
+            this.deleteALLButton.Name = "deleteALLButton";
+            this.deleteALLButton.Size = new System.Drawing.Size(54, 50);
+            this.deleteALLButton.TabIndex = 19;
+            this.deleteALLButton.UseVisualStyleBackColor = true;
+            this.deleteALLButton.Click += new System.EventHandler(this.deleteALLButton_Click);
+            // 
+            // deleteButton
+            // 
+            this.deleteButton.Image = global::WF.Properties.Resources.delete;
+            this.deleteButton.Location = new System.Drawing.Point(12, 198);
+            this.deleteButton.Name = "deleteButton";
+            this.deleteButton.Size = new System.Drawing.Size(54, 54);
+            this.deleteButton.TabIndex = 18;
+            this.deleteButton.UseVisualStyleBackColor = true;
+            this.deleteButton.Click += new System.EventHandler(this.deleteButton_Click);
+            // 
+            // drawEdgeButton
+            // 
+            this.drawEdgeButton.Image = global::WF.Properties.Resources.edge;
+            this.drawEdgeButton.Location = new System.Drawing.Point(12, 141);
+            this.drawEdgeButton.Name = "drawEdgeButton";
+            this.drawEdgeButton.Size = new System.Drawing.Size(54, 51);
+            this.drawEdgeButton.TabIndex = 17;
+            this.drawEdgeButton.UseVisualStyleBackColor = true;
+            this.drawEdgeButton.Click += new System.EventHandler(this.drawEdgeButton_Click);
+            // 
+            // drawVertexButton
+            // 
+            this.drawVertexButton.Image = global::WF.Properties.Resources.vertex;
+            this.drawVertexButton.Location = new System.Drawing.Point(12, 77);
+            this.drawVertexButton.Name = "drawVertexButton";
+            this.drawVertexButton.Size = new System.Drawing.Size(54, 51);
+            this.drawVertexButton.TabIndex = 16;
+            this.drawVertexButton.UseVisualStyleBackColor = true;
+            this.drawVertexButton.Click += new System.EventHandler(this.drawVertexButton_Click);
+            // 
+            // selectButton
+            // 
+            this.selectButton.Image = global::WF.Properties.Resources.cursor;
+            this.selectButton.Location = new System.Drawing.Point(12, 12);
+            this.selectButton.Name = "selectButton";
+            this.selectButton.Size = new System.Drawing.Size(54, 59);
+            this.selectButton.TabIndex = 15;
+            this.selectButton.UseVisualStyleBackColor = true;
+            this.selectButton.Click += new System.EventHandler(this.selectButton_Click);
+            // 
+            // sheet
+            // 
+            this.sheet.Location = new System.Drawing.Point(86, 12);
+            this.sheet.Name = "sheet";
+            this.sheet.Size = new System.Drawing.Size(424, 344);
+            this.sheet.TabIndex = 20;
+            this.sheet.TabStop = false;
+            this.sheet.MouseClick += new System.Windows.Forms.MouseEventHandler(this.sheet_MouseClick);
+            // 
+            // ReadyButton
+            // 
+            this.ReadyButton.Location = new System.Drawing.Point(165, 363);
+            this.ReadyButton.Name = "ReadyButton";
+            this.ReadyButton.Size = new System.Drawing.Size(75, 23);
+            this.ReadyButton.TabIndex = 21;
+            this.ReadyButton.Text = "Далее";
+            this.ReadyButton.UseVisualStyleBackColor = true;
+            this.ReadyButton.Click += new System.EventHandler(this.ReadyButton_Click);
+            // 
+            // graphTypeButton
+            // 
+            this.graphTypeButton.Location = new System.Drawing.Point(152, 197);
+            this.graphTypeButton.Name = "graphTypeButton";
+            this.graphTypeButton.Size = new System.Drawing.Size(96, 23);
+            this.graphTypeButton.TabIndex = 22;
+            this.graphTypeButton.Text = "Графический";
+            this.graphTypeButton.UseVisualStyleBackColor = true;
+            this.graphTypeButton.Click += new System.EventHandler(this.graphTypeButton_Click);
+            // 
+            // textTypeButton
+            // 
+            this.textTypeButton.Location = new System.Drawing.Point(345, 197);
+            this.textTypeButton.Name = "textTypeButton";
+            this.textTypeButton.Size = new System.Drawing.Size(75, 23);
+            this.textTypeButton.TabIndex = 23;
+            this.textTypeButton.Text = "Текстовый\r\n";
+            this.textTypeButton.UseVisualStyleBackColor = true;
+            this.textTypeButton.Click += new System.EventHandler(this.textTypeButton_Click);
+            // 
+            // selectTypeLabel
+            // 
+            this.selectTypeLabel.AutoSize = true;
+            this.selectTypeLabel.Location = new System.Drawing.Point(199, 162);
+            this.selectTypeLabel.Name = "selectTypeLabel";
+            this.selectTypeLabel.Size = new System.Drawing.Size(178, 13);
+            this.selectTypeLabel.TabIndex = 24;
+            this.selectTypeLabel.Text = "Выберите формат задания графа";
+            // 
             // Visualization
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(582, 398);
+            this.Controls.Add(this.selectTypeLabel);
+            this.Controls.Add(this.textTypeButton);
+            this.Controls.Add(this.graphTypeButton);
+            this.Controls.Add(this.ReadyButton);
+            this.Controls.Add(this.sheet);
+            this.Controls.Add(this.deleteALLButton);
+            this.Controls.Add(this.deleteButton);
+            this.Controls.Add(this.drawEdgeButton);
+            this.Controls.Add(this.drawVertexButton);
+            this.Controls.Add(this.selectButton);
             this.Controls.Add(this.DataListBox);
             this.Controls.Add(this._zedGraph_);
             this.Controls.Add(this.GraphData);
@@ -193,6 +312,7 @@
             this.Text = "Graph Research";
             this.Load += new System.EventHandler(this.Visualization_Load);
             this.Resize += new System.EventHandler(this.Visualization_Resize);
+            ((System.ComponentModel.ISupportInitialize)(this.sheet)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -215,6 +335,16 @@
         private System.Windows.Forms.TextBox GraphData;
         private ZedGraph.ZedGraphControl _zedGraph_;
         private System.Windows.Forms.ListBox DataListBox;
+        private System.Windows.Forms.Button selectButton;
+        private System.Windows.Forms.Button drawVertexButton;
+        private System.Windows.Forms.Button drawEdgeButton;
+        private System.Windows.Forms.Button deleteButton;
+        private System.Windows.Forms.Button deleteALLButton;
+        private System.Windows.Forms.PictureBox sheet;
+        private System.Windows.Forms.Button ReadyButton;
+        private System.Windows.Forms.Button graphTypeButton;
+        private System.Windows.Forms.Button textTypeButton;
+        private System.Windows.Forms.Label selectTypeLabel;
     }
 }
 

@@ -14,6 +14,13 @@ namespace WF {
         /// </summary>
         Graph graph = null;
 
+        DrawGraph G;
+        List<Vertex> V;
+        List<Edge<int>> E_Whole;
+        List<Edge<double>> E_Real;
+
+        int selected1, selected2;
+
         /// <summary>
         /// Инициализация формы
         /// </summary>
@@ -46,6 +53,16 @@ namespace WF {
             Whole.Visible = false;
             _zedGraph_.Visible = false;
             DataListBox.Visible = false;
+            sheet.Visible = false;
+            selectButton.Visible = false;
+            drawEdgeButton.Visible = false;
+            drawVertexButton.Visible = false;
+            deleteButton.Visible = false;
+            deleteALLButton.Visible = false;
+            ReadyButton.Visible = false;
+            graphTypeButton.Visible = false;
+            textTypeButton.Visible = false;
+            selectTypeLabel.Visible = false;
         }
 
         /// <summary>
@@ -55,9 +72,9 @@ namespace WF {
         /// <param name="e"></param>
         private void Start_button(object sender, EventArgs e) {
             button_start.Visible = false;
-            Whole.Visible = true;
-            Real.Visible = true;
-            ChooseLabel.Visible = true;
+            graphTypeButton.Visible = true;
+            textTypeButton.Visible = true;
+            selectTypeLabel.Visible = true;
         }
 
         /// <summary>
@@ -75,8 +92,8 @@ namespace WF {
         private void DrawGraph(Graph graph, int t, int m) {
             GraphPane graphPane = _zedGraph_.GraphPane;
             graphPane.Title.Text = "Зависимость количества маркеров от времени";
-            graphPane.XAxis.Title.Text = "Количество маркеров";
-            graphPane.YAxis.Title.Text = "Время";
+            graphPane.XAxis.Title.Text = "Время";
+            graphPane.YAxis.Title.Text = "Количество маркеров";
             double[] count = Array.ConvertAll(graph.GetCountOfMarkers(t, m), (int value) => (double)value);
             PointPairList points = new PointPairList();
             for (int i = 0; i < count.Length; ++i) {
@@ -84,6 +101,17 @@ namespace WF {
             }
             LineItem graphic = graphPane.AddCurve("Graphic", points, Color.Blue, SymbolType.None);
             _zedGraph_.AxisChange();
+        }
+
+        void InitializePictureBox() {
+            V = new List<Vertex>();
+            G = new DrawGraph(sheet.Width, sheet.Height);
+            if (flag) {
+                E_Whole = new List<Edge<int>>();
+            } else {
+                E_Real = new List<Edge<double>>();
+            }
+            sheet.Image = G.GetBitmap();
         }
 
         /// <summary>
@@ -146,10 +174,21 @@ namespace WF {
             Whole.Visible = false;
             Real.Visible = false;
             ChooseLabel.Visible = false;
-            MainLabel.Visible = true;
-            GraphData.Visible = true;
-            BeginButton.Visible = true;
             flag = false;
+            if (textOrGraphic) {
+                MainLabel.Visible = true;
+                GraphData.Visible = true;
+                BeginButton.Visible = true;
+            } else {
+                sheet.Visible = true;
+                selectButton.Visible = true;
+                drawEdgeButton.Visible = true;
+                drawVertexButton.Visible = true;
+                deleteButton.Visible = true;
+                deleteALLButton.Visible = true;
+                ReadyButton.Visible = true;
+                InitializePictureBox();
+            }
         }
 
         /// <summary>
@@ -162,9 +201,20 @@ namespace WF {
             Whole.Visible = false;
             Real.Visible = false;
             ChooseLabel.Visible = false;
-            MainLabel.Visible = true;
-            GraphData.Visible = true;
-            BeginButton.Visible = true;
+            if (textOrGraphic) {
+                MainLabel.Visible = true;
+                GraphData.Visible = true;
+                BeginButton.Visible = true;
+            } else {
+                sheet.Visible = true;
+                selectButton.Visible = true;
+                drawEdgeButton.Visible = true;
+                drawVertexButton.Visible = true;
+                deleteButton.Visible = true;
+                deleteALLButton.Visible = true;
+                ReadyButton.Visible = true;
+                InitializePictureBox();
+            }
         }
 
         /// <summary>
@@ -208,7 +258,7 @@ namespace WF {
                 if (!int.TryParse(tmp[1], out int to) || to >= CountOfVertex) {
                     throw new FormatException($"Строка №{i + 1} имеет неверный формат, повторите ввод");
                 }
-                if (!int.TryParse(tmp[2], out int w)) {
+                if (!int.TryParse(tmp[2], out int w) || w <= 0) {
                     throw new FormatException($"Строка №{i + 1} имеет неверный формат, повторите ввод");
                 }
                 data[v].Add(new Pair<int, int>(to, w));
@@ -231,7 +281,7 @@ namespace WF {
                 throw new FormatException("Вы ничего не ввели");
             }
             if (!int.TryParse(graphData[0], out CountOfVertex) || CountOfVertex <= 0) {
-                throw new FormatException("В первой строке должно содержаться колиечество вершин графа, которое обязательно больше нуля");
+                throw new FormatException("В первой строке должно содержаться количество вершин графа, которое обязательно больше нуля");
             }
             List<List<Pair<int, double>>> data = new List<List<Pair<int, double>>>(CountOfVertex);
             for (int i = 0; i < CountOfVertex; ++i) {
@@ -258,7 +308,7 @@ namespace WF {
                 if (!int.TryParse(tmp[1], out int to) || to >= CountOfVertex) {
                     throw new FormatException($"Строка №{i + 1} имеет неверный формат, повторите ввод");
                 }
-                if (!double.TryParse(tmp[2], out double w)) {
+                if (!double.TryParse(tmp[2], out double w) || w <= 0) {
                     throw new FormatException($"Строка №{i + 1} имеет неверный формат, повторите ввод");
                 }
                 data[v].Add(new Pair<int, double>(to, w));
@@ -273,10 +323,20 @@ namespace WF {
         /// <param name="e"></param>
         private void EndButton_Click(object sender, EventArgs e) {
             if (!int.TryParse(TimeTextBox.Text, out int time) || time <= 0) {
-                throw new FormatException("Время должно быть строго положительным целым числом");
+                MessageBox.Show("Время должно быть строго положительным целым числом");
+                return;
+            }
+            if (!flag && time >= 1000) {
+                MessageBox.Show("Время в случае с вещественными весами ребер не может быть больше 1000");
+                return;
+            }
+            if (flag && time >= 1000000) {
+                MessageBox.Show("Время не может превышать 1000000 в случае с целыми весами ребер");
+                return;
             }
             if (!int.TryParse(CountOfMarkersTextBox.Text, out int markers_count) || markers_count < 0) {
-                throw new FormatException("Количество маркеров должно быть неотрицательным целым числом");
+                MessageBox.Show("Количество маркеров должно быть неотрицательным целым числом");
+                return;
             }
             TimeLabel.Visible = false;
             EndButton.Visible = false;
@@ -359,6 +419,336 @@ namespace WF {
         private void Visualization_Load(object sender, EventArgs e) {
             Visualization_Resize(sender, e);
             SetVisible();
+        }
+
+        bool textOrGraphic = true;
+
+        private void textTypeButton_Click(object sender, EventArgs e) {
+            graphTypeButton.Visible = false;
+            textTypeButton.Visible = false;
+            selectTypeLabel.Visible = false;
+            Whole.Visible = true;
+            Real.Visible = true;
+            ChooseLabel.Visible = true;
+        }
+
+        private void selectButton_Click(object sender, EventArgs e) {
+            selectButton.Enabled = false;
+            drawVertexButton.Enabled = true;
+            drawEdgeButton.Enabled = true;
+            deleteButton.Enabled = true;
+            G.clearSheet();
+            if (flag) {
+                G.drawALLGraph(V, E_Whole);
+            } else {
+                G.drawALLGraph(V, E_Real);
+            }
+            sheet.Image = G.GetBitmap();
+            selected1 = -1;
+        }
+
+        private void drawVertexButton_Click(object sender, EventArgs e) {
+            drawVertexButton.Enabled = false;
+            selectButton.Enabled = true;
+            drawEdgeButton.Enabled = true;
+            deleteButton.Enabled = true;
+            G.clearSheet();
+            if (flag) {
+                G.drawALLGraph(V, E_Whole);
+            } else {
+                G.drawALLGraph(V, E_Real);
+            }
+            sheet.Image = G.GetBitmap();
+        }
+
+        private void drawEdgeButton_Click(object sender, EventArgs e) {
+            drawEdgeButton.Enabled = false;
+            selectButton.Enabled = true;
+            drawVertexButton.Enabled = true;
+            deleteButton.Enabled = true;
+            G.clearSheet();
+            if (flag) {
+                G.drawALLGraph(V, E_Whole); 
+            } else {
+                G.drawALLGraph(V, E_Real);
+            }
+            sheet.Image = G.GetBitmap();
+            selected1 = -1;
+            selected2 = -1;
+        }
+
+        private void deleteButton_Click(object sender, EventArgs e) {
+            deleteButton.Enabled = false;
+            selectButton.Enabled = true;
+            drawVertexButton.Enabled = true;
+            drawEdgeButton.Enabled = true;
+            G.clearSheet();
+            if (flag) {
+                G.drawALLGraph(V, E_Whole);
+            }
+            else {
+                G.drawALLGraph(V, E_Real);
+            }
+            sheet.Image = G.GetBitmap();
+        }
+
+        private void deleteALLButton_Click(object sender, EventArgs e) {
+            selectButton.Enabled = true;
+            drawVertexButton.Enabled = true;
+            drawEdgeButton.Enabled = true;
+            deleteButton.Enabled = true;
+            const string message = "Вы действительно хотите полностью удалить граф?";
+            const string caption = "Удаление";
+            var MBSave = MessageBox.Show(message, caption, MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (MBSave == DialogResult.Yes) {
+                V.Clear();
+                if (flag) {
+                    E_Whole.Clear();
+                } else {
+                    E_Real.Clear();
+                }
+                G.clearSheet();
+                sheet.Image = G.GetBitmap();
+            }
+        }
+
+        private void sheet_MouseClick(object sender, MouseEventArgs e) {
+            if (selectButton.Enabled == false) {
+                for (int i = 0; i < V.Count; i++) {
+                    if (Math.Pow((V[i].x - e.X), 2) + Math.Pow((V[i].y - e.Y), 2) <= G.R * G.R) {
+                        if (selected1 != -1) {
+                            selected1 = -1;
+                            G.clearSheet();
+                            if (flag) {
+                                G.drawALLGraph(V, E_Whole);
+                            }
+                            else {
+                                G.drawALLGraph(V, E_Real);
+                            }
+                            sheet.Image = G.GetBitmap();
+                        }
+                    }
+                }
+            }
+            //нажата кнопка "рисовать вершину"
+            if (drawVertexButton.Enabled == false) {
+                V.Add(new Vertex(e.X, e.Y));
+                if (V.Count == 200) {
+                    V.Clear();
+                    if (flag) {
+                        E_Whole.Clear();
+                    } else {
+                        E_Real.Clear();
+                    }
+                    graph = null;
+                    G.clearSheet();
+                    return;
+                }
+                G.drawVertex(e.X, e.Y, V.Count.ToString());
+                sheet.Image = G.GetBitmap();
+            }
+            //нажата кнопка "рисовать ребро"
+            if (drawEdgeButton.Enabled == false) {
+                if (flag) {
+                    if (E_Whole.Count == 200) {
+                        E_Whole.Clear();
+                        V.Clear();
+                        graph = null;
+                        G.clearSheet();
+                        return;
+                    }
+                } else {
+                    if (E_Real.Count == 200) {
+                        E_Real.Clear();
+                        V.Clear();
+                        graph = null;
+                        G.clearSheet();
+                        return;
+                    }
+                }
+                if (e.Button == MouseButtons.Left) {
+                    for (int i = 0; i < V.Count; i++) {
+                        if (Math.Pow((V[i].x - e.X), 2) + Math.Pow((V[i].y - e.Y), 2) <= G.R * G.R) {
+                            if (selected1 == -1) {
+                                G.drawSelectedVertex(V[i].x, V[i].y);
+                                selected1 = i;
+                                sheet.Image = G.GetBitmap();
+                                break;
+                            }
+                            if (selected2 == -1) {
+                                G.drawSelectedVertex(V[i].x, V[i].y);
+                                selected2 = i;
+                                string weight_input;
+                                if (flag) {
+                                    int w_in;
+                                    do {
+                                        weight_input = Microsoft.VisualBasic.Interaction.InputBox("Введите вес данного ребра");
+                                        if (!int.TryParse(weight_input, out w_in) || w_in <= 0) {
+                                            MessageBox.Show("Ребро графа должно иметь целый положительный вес");
+                                        }
+                                    } while (!int.TryParse(weight_input, out w_in) || w_in <= 0);
+                                    E_Whole.Add(new Edge<int>(selected1, selected2, w_in));
+                                }
+                                else {
+                                    double w_in;
+                                    do {
+                                        weight_input = Microsoft.VisualBasic.Interaction.InputBox("Введите вес данного ребра");
+                                        if (!double.TryParse(weight_input, out w_in) || w_in < 0.00001) {
+                                            MessageBox.Show("Ребро графа должно иметь положительный вес");
+                                        }
+                                    } while (!double.TryParse(weight_input, out w_in) || w_in < 0.00001);
+                                    E_Real.Add(new Edge<double>(selected1, selected2, w_in));
+                                }
+                                if (flag) {
+                                    G.drawEdge(V[selected1], V[selected2], E_Whole[E_Whole.Count - 1], E_Whole.Count - 1);
+                                } else {
+                                    G.drawEdge(V[selected1], V[selected2], E_Real[E_Real.Count - 1], E_Real.Count - 1);
+                                }
+                                selected1 = -1;
+                                selected2 = -1;
+                                sheet.Image = G.GetBitmap();
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (e.Button == MouseButtons.Right) {
+                    if ((selected1 != -1) &&
+                        (Math.Pow((V[selected1].x - e.X), 2) + Math.Pow((V[selected1].y - e.Y), 2) <= G.R * G.R)) {
+                        G.drawVertex(V[selected1].x, V[selected1].y, (selected1 + 1).ToString());
+                        selected1 = -1;
+                        sheet.Image = G.GetBitmap();
+                    }
+                }
+            }
+            //нажата кнопка "удалить элемент"
+            if (deleteButton.Enabled == false) {
+                bool _flag_ = false; //удалили ли что-нибудь по ЭТОМУ клику
+                //ищем, возможно была нажата вершина
+                for (int i = 0; i < V.Count; i++) {
+                    if (Math.Pow((V[i].x - e.X), 2) + Math.Pow((V[i].y - e.Y), 2) <= G.R * G.R) {
+                        if (flag) {
+                            for (int j = 0; j < E_Whole.Count; j++) {
+                                if ((E_Whole[j].v1 == i) || (E_Whole[j].v2 == i)) {
+                                    E_Whole.RemoveAt(j);
+                                    j--;
+                                }
+                                else {
+                                    if (E_Whole[j].v1 > i) E_Whole[j].v1--;
+                                    if (E_Whole[j].v2 > i) E_Whole[j].v2--;
+                                }
+                            }
+                        } else {
+                            for (int j = 0; j < E_Real.Count; j++) {
+                                if ((E_Real[j].v1 == i) || (E_Real[j].v2 == i)) {
+                                    E_Real.RemoveAt(j);
+                                    j--;
+                                }
+                                else {
+                                    if (E_Real[j].v1 > i) E_Real[j].v1--;
+                                    if (E_Real[j].v2 > i) E_Real[j].v2--;
+                                }
+                            }
+                        }
+                        V.RemoveAt(i);
+                        _flag_ = true;
+                        break;
+                    }
+                }
+                //ищем, возможно было нажато ребро
+                if (!_flag_) {
+                    if (flag) {
+                        for (int i = 0; i < E_Whole.Count; i++) {
+                            if (E_Whole[i].v1 == E_Whole[i].v2) //если это петля
+                            {
+                                if ((Math.Pow((V[E_Whole[i].v1].x - G.R - e.X), 2) + Math.Pow((V[E_Whole[i].v1].y - G.R - e.Y), 2) <= ((G.R + 2) * (G.R + 2))) &&
+                                    (Math.Pow((V[E_Whole[i].v1].x - G.R - e.X), 2) + Math.Pow((V[E_Whole[i].v1].y - G.R - e.Y), 2) >= ((G.R - 2) * (G.R - 2)))) {
+                                    E_Whole.RemoveAt(i);
+                                    _flag_ = true;
+                                    break;
+                                }
+                            }
+                            else //не петля
+                            {
+                                if (((e.X - V[E_Whole[i].v1].x) * (V[E_Whole[i].v2].y - V[E_Whole[i].v1].y) / (V[E_Whole[i].v2].x - V[E_Whole[i].v1].x) + V[E_Whole[i].v1].y) <= (e.Y + 4) &&
+                                    ((e.X - V[E_Whole[i].v1].x) * (V[E_Whole[i].v2].y - V[E_Whole[i].v1].y) / (V[E_Whole[i].v2].x - V[E_Whole[i].v1].x) + V[E_Whole[i].v1].y) >= (e.Y - 4)) {
+                                    if ((V[E_Whole[i].v1].x <= V[E_Whole[i].v2].x && V[E_Whole[i].v1].x <= e.X && e.X <= V[E_Whole[i].v2].x) ||
+                                        (V[E_Whole[i].v1].x >= V[E_Whole[i].v2].x && V[E_Whole[i].v1].x >= e.X && e.X >= V[E_Whole[i].v2].x)) {
+                                        E_Whole.RemoveAt(i);
+                                        _flag_ = true;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        for (int i = 0; i < E_Real.Count; i++) {
+                            if (E_Real[i].v1 == E_Real[i].v2) //если это петля
+                            {
+                                if ((Math.Pow((V[E_Real[i].v1].x - G.R - e.X), 2) + Math.Pow((V[E_Real[i].v1].y - G.R - e.Y), 2) <= ((G.R + 2) * (G.R + 2))) &&
+                                    (Math.Pow((V[E_Real[i].v1].x - G.R - e.X), 2) + Math.Pow((V[E_Real[i].v1].y - G.R - e.Y), 2) >= ((G.R - 2) * (G.R - 2)))) {
+                                    E_Real.RemoveAt(i);
+                                    _flag_ = true;
+                                    break;
+                                }
+                            }
+                            else //не петля
+                            {
+                                if (((e.X - V[E_Real[i].v1].x) * (V[E_Real[i].v2].y - V[E_Real[i].v1].y) / (V[E_Real[i].v2].x - V[E_Real[i].v1].x) + V[E_Real[i].v1].y) <= (e.Y + 4) &&
+                                    ((e.X - V[E_Real[i].v1].x) * (V[E_Real[i].v2].y - V[E_Real[i].v1].y) / (V[E_Real[i].v2].x - V[E_Real[i].v1].x) + V[E_Real[i].v1].y) >= (e.Y - 4)) {
+                                    if ((V[E_Real[i].v1].x <= V[E_Real[i].v2].x && V[E_Real[i].v1].x <= e.X && e.X <= V[E_Real[i].v2].x) ||
+                                        (V[E_Real[i].v1].x >= V[E_Real[i].v2].x && V[E_Real[i].v1].x >= e.X && e.X >= V[E_Real[i].v2].x)) {
+                                        E_Real.RemoveAt(i);
+                                        _flag_ = true;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                //если что-то было удалено, то обновляем граф на экране
+                if (_flag_) {
+                    G.clearSheet();
+                    if (flag) {
+                        G.drawALLGraph(V, E_Whole);
+                    }
+                    else {
+                        G.drawALLGraph(V, E_Real);
+                    }
+                    sheet.Image = G.GetBitmap();
+                }
+            }
+        }
+
+        private void ReadyButton_Click(object sender, EventArgs e) {
+            sheet.Visible = false;
+            selectButton.Visible = false;
+            drawEdgeButton.Visible = false;
+            drawVertexButton.Visible = false;
+            deleteButton.Visible = false;
+            deleteALLButton.Visible = false;
+            ReadyButton.Visible = false;
+            if (flag) {
+                graph = new Graph(G.GetAdjacencyList(V.Count, E_Whole), V.Count);
+            } else {
+                graph = new Graph(G.GetAdjacencyList(V.Count, E_Real), V.Count);
+            }
+            TimeLabel.Visible = true;
+            EndButton.Visible = true;
+            TimeTextBox.Visible = true;
+            CountOfMarkersLabel.Visible = true;
+            CountOfMarkersTextBox.Visible = true;
+        }
+
+        private void graphTypeButton_Click(object sender, EventArgs e) {
+            graphTypeButton.Visible = false;
+            textTypeButton.Visible = false;
+            selectTypeLabel.Visible = false;
+            Whole.Visible = true;
+            Real.Visible = true;
+            ChooseLabel.Visible = true;
+            textOrGraphic = false;
         }
     }
 }
