@@ -80,10 +80,8 @@ namespace WF {
                     }
                     else {
                         gr.DrawLine(darkGoldPen, V1.x, V1.y, V2.x + 10, V2.y + 15);
-                    }
-                    //gr.DrawLine(darkGoldPen, V1.x, V1.y, V2.x + 20, V2.y + 20);
+                    }   
                 }
-                //gr.DrawLine(darkGoldPen, V1.x, V1.y, V2.x, V2.y);
                 drawVertex(V1.x, V1.y, (E.v1 + 1).ToString());
                 point = new PointF((V1.x + V2.x) / 2, (V1.y + V2.y) / 2);
                 gr.DrawString(E.weight.ToString(), fo, br, point);

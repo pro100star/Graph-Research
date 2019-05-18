@@ -48,6 +48,12 @@
             this.graphTypeButton = new System.Windows.Forms.Button();
             this.textTypeButton = new System.Windows.Forms.Button();
             this.selectTypeLabel = new System.Windows.Forms.Label();
+            this.saveButton = new System.Windows.Forms.Button();
+            this.loadFromFile = new System.Windows.Forms.Button();
+            this.saveGraphic = new System.Windows.Forms.Button();
+            this.OneMarkerButton = new System.Windows.Forms.Button();
+            this.someMarkersButton = new System.Windows.Forms.Button();
+            this.SelectMarkersLabel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.sheet)).BeginInit();
             this.SuspendLayout();
             // 
@@ -235,7 +241,7 @@
             // 
             this.sheet.Location = new System.Drawing.Point(86, 12);
             this.sheet.Name = "sheet";
-            this.sheet.Size = new System.Drawing.Size(424, 344);
+            this.sheet.Size = new System.Drawing.Size(415, 345);
             this.sheet.TabIndex = 20;
             this.sheet.TabStop = false;
             this.sheet.MouseClick += new System.Windows.Forms.MouseEventHandler(this.sheet_MouseClick);
@@ -279,11 +285,76 @@
             this.selectTypeLabel.TabIndex = 24;
             this.selectTypeLabel.Text = "Выберите формат задания графа";
             // 
+            // saveButton
+            // 
+            this.saveButton.Location = new System.Drawing.Point(12, 314);
+            this.saveButton.Name = "saveButton";
+            this.saveButton.Size = new System.Drawing.Size(54, 59);
+            this.saveButton.TabIndex = 25;
+            this.saveButton.Text = "Сохранить граф";
+            this.saveButton.UseVisualStyleBackColor = true;
+            this.saveButton.Click += new System.EventHandler(this.saveButton_Click);
+            // 
+            // loadFromFile
+            // 
+            this.loadFromFile.Location = new System.Drawing.Point(246, 234);
+            this.loadFromFile.Name = "loadFromFile";
+            this.loadFromFile.Size = new System.Drawing.Size(93, 40);
+            this.loadFromFile.TabIndex = 26;
+            this.loadFromFile.Text = "Загрузить граф из файла";
+            this.loadFromFile.UseVisualStyleBackColor = true;
+            this.loadFromFile.Click += new System.EventHandler(this.loadFromFile_Click);
+            // 
+            // saveGraphic
+            // 
+            this.saveGraphic.Location = new System.Drawing.Point(476, 332);
+            this.saveGraphic.Name = "saveGraphic";
+            this.saveGraphic.Size = new System.Drawing.Size(68, 41);
+            this.saveGraphic.TabIndex = 27;
+            this.saveGraphic.Text = "Сохранить график";
+            this.saveGraphic.UseVisualStyleBackColor = true;
+            this.saveGraphic.Click += new System.EventHandler(this.saveGraphic_Click);
+            // 
+            // OneMarkerButton
+            // 
+            this.OneMarkerButton.Location = new System.Drawing.Point(152, 195);
+            this.OneMarkerButton.Name = "OneMarkerButton";
+            this.OneMarkerButton.Size = new System.Drawing.Size(96, 60);
+            this.OneMarkerButton.TabIndex = 28;
+            this.OneMarkerButton.Text = "По 1 на ребро";
+            this.OneMarkerButton.UseVisualStyleBackColor = true;
+            this.OneMarkerButton.Click += new System.EventHandler(this.OneMarkerButton_Click);
+            // 
+            // someMarkersButton
+            // 
+            this.someMarkersButton.Location = new System.Drawing.Point(320, 195);
+            this.someMarkersButton.Name = "someMarkersButton";
+            this.someMarkersButton.Size = new System.Drawing.Size(125, 60);
+            this.someMarkersButton.TabIndex = 29;
+            this.someMarkersButton.Text = "Выпустить несколько импульсов на конкретное ребро";
+            this.someMarkersButton.UseVisualStyleBackColor = true;
+            this.someMarkersButton.Click += new System.EventHandler(this.someMarkersButton_Click);
+            // 
+            // SelectMarkersLabel
+            // 
+            this.SelectMarkersLabel.AutoSize = true;
+            this.SelectMarkersLabel.Location = new System.Drawing.Point(185, 128);
+            this.SelectMarkersLabel.Name = "SelectMarkersLabel";
+            this.SelectMarkersLabel.Size = new System.Drawing.Size(239, 13);
+            this.SelectMarkersLabel.TabIndex = 30;
+            this.SelectMarkersLabel.Text = "Выберите изначальное количество маркеров";
+            // 
             // Visualization
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(582, 398);
+            this.Controls.Add(this.SelectMarkersLabel);
+            this.Controls.Add(this.someMarkersButton);
+            this.Controls.Add(this.OneMarkerButton);
+            this.Controls.Add(this.saveGraphic);
+            this.Controls.Add(this.loadFromFile);
+            this.Controls.Add(this.saveButton);
             this.Controls.Add(this.selectTypeLabel);
             this.Controls.Add(this.textTypeButton);
             this.Controls.Add(this.graphTypeButton);
@@ -345,6 +416,12 @@
         private System.Windows.Forms.Button graphTypeButton;
         private System.Windows.Forms.Button textTypeButton;
         private System.Windows.Forms.Label selectTypeLabel;
+        private System.Windows.Forms.Button saveButton;
+        private System.Windows.Forms.Button loadFromFile;
+        private System.Windows.Forms.Button saveGraphic;
+        private System.Windows.Forms.Button OneMarkerButton;
+        private System.Windows.Forms.Button someMarkersButton;
+        private System.Windows.Forms.Label SelectMarkersLabel;
     }
 }
 

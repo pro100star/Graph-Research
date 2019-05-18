@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 using ZedGraph;
 
@@ -19,6 +20,8 @@ namespace WF {
         List<Edge<int>> E_Whole;
         List<Edge<double>> E_Real;
 
+        int time_, markers_count_;
+
         int selected1, selected2;
 
         /// <summary>
@@ -33,6 +36,7 @@ namespace WF {
             GraphData.Height = ClientRectangle.Height / 2;
             GraphData.Width = ClientRectangle.Width / 2;
             Whole.Height = Real.Height;
+            saveGraphic.Location = new Point(ClientRectangle.Width * 8 / 9, ClientRectangle.Width * 8 / 9);
         }
 
         /// <summary>
@@ -63,6 +67,12 @@ namespace WF {
             graphTypeButton.Visible = false;
             textTypeButton.Visible = false;
             selectTypeLabel.Visible = false;
+            saveButton.Visible = false;
+            loadFromFile.Visible = false;
+            saveGraphic.Visible = false;
+            OneMarkerButton.Visible = false;
+            someMarkersButton.Visible = false;
+            SelectMarkersLabel.Visible = false;
         }
 
         /// <summary>
@@ -72,9 +82,11 @@ namespace WF {
         /// <param name="e"></param>
         private void Start_button(object sender, EventArgs e) {
             button_start.Visible = false;
-            graphTypeButton.Visible = true;
-            textTypeButton.Visible = true;
-            selectTypeLabel.Visible = true;
+            //
+            ChooseLabel.Visible = true;
+            Real.Visible = true;
+            Whole.Visible = true;
+            //
         }
 
         /// <summary>
@@ -97,7 +109,11 @@ namespace WF {
             double[] count = Array.ConvertAll(graph.GetCountOfMarkers(t, m), (int value) => (double)value);
             PointPairList points = new PointPairList();
             for (int i = 0; i < count.Length; ++i) {
-                points.Add(i, count[i]);
+                if (flag) {
+                    points.Add(i, count[i]);
+                } else {
+                    points.Add(i * 1.0 / 100, count[i]);
+                }
             }
             LineItem graphic = graphPane.AddCurve("Graphic", points, Color.Blue, SymbolType.None);
             _zedGraph_.AxisChange();
@@ -112,6 +128,7 @@ namespace WF {
                 E_Real = new List<Edge<double>>();
             }
             sheet.Image = G.GetBitmap();
+            saveButton.Visible = true;
         }
 
         /// <summary>
@@ -175,7 +192,17 @@ namespace WF {
             Real.Visible = false;
             ChooseLabel.Visible = false;
             flag = false;
-            if (textOrGraphic) {
+            /*
+            OneMarkerButton.Visible = true;
+            someMarkersButton.Visible = true;
+            SelectMarkersLabel.Visible = true;
+            */
+                //
+            graphTypeButton.Visible = true;
+            textTypeButton.Visible = true;
+            selectTypeLabel.Visible = true;
+            loadFromFile.Visible = true;
+            /*if (textOrGraphic) {
                 MainLabel.Visible = true;
                 GraphData.Visible = true;
                 BeginButton.Visible = true;
@@ -188,7 +215,7 @@ namespace WF {
                 deleteALLButton.Visible = true;
                 ReadyButton.Visible = true;
                 InitializePictureBox();
-            }
+            }*/
         }
 
         /// <summary>
@@ -201,7 +228,11 @@ namespace WF {
             Whole.Visible = false;
             Real.Visible = false;
             ChooseLabel.Visible = false;
-            if (textOrGraphic) {
+            graphTypeButton.Visible = true;
+            textTypeButton.Visible = true;
+            selectTypeLabel.Visible = true;
+            loadFromFile.Visible = true;
+            /*if (textOrGraphic) {
                 MainLabel.Visible = true;
                 GraphData.Visible = true;
                 BeginButton.Visible = true;
@@ -214,7 +245,7 @@ namespace WF {
                 deleteALLButton.Visible = true;
                 ReadyButton.Visible = true;
                 InitializePictureBox();
-            }
+            }*/
         }
 
         /// <summary>
@@ -338,15 +369,24 @@ namespace WF {
                 MessageBox.Show("Количество маркеров должно быть неотрицательным целым числом");
                 return;
             }
+            OneMarkerButton.Visible = true;
+            someMarkersButton.Visible = true;
+            SelectMarkersLabel.Visible = true;
+            time_ = time;
+            markers_count_ = markers_count;
+
             TimeLabel.Visible = false;
             EndButton.Visible = false;
             TimeTextBox.Visible = false;
             CountOfMarkersLabel.Visible = false;
             CountOfMarkersTextBox.Visible = false;
+            /*
             DrawGraph(graph, time, markers_count);
             ChangeDataListBox();
             DataListBox.Visible = true;
             _zedGraph_.Visible = true;
+            saveGraphic.Visible = true;
+            */
         }
 
         /// <summary>
@@ -376,8 +416,9 @@ namespace WF {
             EndButton.Location = new Point(w + TimeTextBox.Location.X - EndButton.Width / 2, height * 4 / 5);
             TimeLabel.Location = new Point(TimeTextBox.Location.X, TimeTextBox.Location.Y - 30);
             CountOfMarkersLabel.Location = new Point(CountOfMarkersTextBox.Location.X, CountOfMarkersTextBox.Location.Y - 30);
-            DataListBox.Size = new Size(width / 2, height);
+            DataListBox.Size = new Size(width / 2, height * 7 / 8);
             DataListBox.Location = new Point(width / 2, 0);
+            saveGraphic.Location = new Point(ClientRectangle.Width * 7 / 8, ClientRectangle.Height * 8 / 9);
         }
 
         /// <summary>
@@ -407,7 +448,7 @@ namespace WF {
                 }
             }
             DataListBox.Items.Add($"Количество маркеров,");
-            DataListBox.Items.Add($"необходимое для выхода из вершины: {graph.CountOfMarkers_}.");
+            DataListBox.Items.Add($"необходимое для выхода из вершины: {graph.CountOfMarkers_ + 1}.");
             DataListBox.Items.Add($"Время исследования: {graph.ResearchTime_}.");
         }
 
@@ -424,12 +465,13 @@ namespace WF {
         bool textOrGraphic = true;
 
         private void textTypeButton_Click(object sender, EventArgs e) {
+            loadFromFile.Visible = false;
+            MainLabel.Visible = true;
+            GraphData.Visible = true;
+            BeginButton.Visible = true;
             graphTypeButton.Visible = false;
             textTypeButton.Visible = false;
             selectTypeLabel.Visible = false;
-            Whole.Visible = true;
-            Real.Visible = true;
-            ChooseLabel.Visible = true;
         }
 
         private void selectButton_Click(object sender, EventArgs e) {
@@ -729,6 +771,7 @@ namespace WF {
             deleteButton.Visible = false;
             deleteALLButton.Visible = false;
             ReadyButton.Visible = false;
+            saveButton.Visible = false;
             if (flag) {
                 graph = new Graph(G.GetAdjacencyList(V.Count, E_Whole), V.Count);
             } else {
@@ -741,14 +784,262 @@ namespace WF {
             CountOfMarkersTextBox.Visible = true;
         }
 
+        private void saveButton_Click(object sender, EventArgs e) {
+            if (sheet.Image != null) {
+                SaveFileDialog savedialog = new SaveFileDialog();
+                savedialog.Title = "Сохранить картинку как...";
+                savedialog.OverwritePrompt = true;
+                savedialog.CheckPathExists = true;
+                savedialog.Filter = "Image Files(*.BMP)|*.BMP|Image Files(*.JPG)|*.JPG|Image Files(*.GIF)|*.GIF|Image Files(*.PNG)|*.PNG|All files (*.*)|*.*";
+                savedialog.ShowHelp = true;
+                if (savedialog.ShowDialog() == DialogResult.OK) {
+                    try {
+                        sheet.Image.Save(savedialog.FileName, System.Drawing.Imaging.ImageFormat.Jpeg);
+                    }
+                    catch {
+                        MessageBox.Show("Невозможно сохранить изображение", "Ошибка",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+                List<string> result = new List<string>();
+                if (E_Whole != null) {
+                    
+                    var matr = G.GetAdjacencyList(V.Count, E_Whole);
+                    result.Add(V.Count.ToString());
+                    for (int i = 0; i < matr.Count; ++i) {
+                        for (int j = 0; j < matr[i].Count; ++j) {
+                            result.Add(i.ToString() + ' ' + matr[i][j].First.ToString() + ' ' + matr[i][j].Second.ToString());
+                        }
+                    }
+                } else {
+                    var matr = G.GetAdjacencyList(V.Count, E_Real);
+                    result.Add(V.Count.ToString());
+                    for (int i = 0; i < matr.Count; ++i) {
+                        for (int j = 0; j < matr[i].Count; ++j) {
+                            result.Add(i.ToString() + ' ' + matr[i][j].First.ToString() + ' ' + matr[i][j].Second.ToString());
+                        }
+                    }
+                }
+                savedialog = new SaveFileDialog();
+                savedialog.Title = "Сохранить информацию о графе как...";
+                savedialog.OverwritePrompt = true;
+                savedialog.CheckPathExists = true;
+                savedialog.Filter = "All files (*.gr*)|*.*";
+                savedialog.ShowHelp = true;
+                if (savedialog.ShowDialog() == DialogResult.OK) {
+                    try {
+                        File.WriteAllLines(savedialog.FileName, result);
+                    }
+                    catch {
+                        MessageBox.Show("Невозможно сохранить файл", "Ошибка",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+        }
+
+        private void loadFromFile_Click(object sender, EventArgs e) {
+            string path = Microsoft.VisualBasic.Interaction.InputBox("Введите название файла формата .gr");
+            if (path.Length < 3) {
+                MessageBox.Show("Неверный формат");
+                return;
+            }
+            if (path.Substring(path.Length - 3) != ".gr") {
+                MessageBox.Show("Неверный формат");
+                return;
+            }
+            if (File.Exists(path)) {
+                try {
+                    StreamReader sr = new StreamReader(path);
+                    string tmps = sr.ReadLine();
+                    if (!int.TryParse(tmps, out int count_of_vertex) || count_of_vertex <= 0) {
+                        MessageBox.Show("В первой строке должно содержаться количество вершин графа");
+                        return;
+                    }
+                    if (flag) {
+                        List<List<Pair<int, int>>> data = new List<List<Pair<int, int>>>();
+                        for (int i = 0; i < count_of_vertex; ++i) {
+                            data.Add(new List<Pair<int, int>>());
+                        }
+                        int k = 0;
+                        for (; !sr.EndOfStream; ++k) {
+                            string s = sr.ReadLine();
+                            bool f = true;
+                            foreach (char c in s) {
+                                if (c != ' ') {
+                                    f = false;
+                                    break;
+                                }
+                            }
+                            if (f) {
+                                continue;
+                            }
+                            string[] tmp = s.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                            if (tmp.Length != 3) {
+                                MessageBox.Show($"Строка №{k + 1} имеет неверный формат, повторите ввод");
+                                return;
+                            }
+                            if (!int.TryParse(tmp[0], out int v) || v >= count_of_vertex) {
+                                MessageBox.Show($"Строка №{k + 1} имеет неверный формат, повторите ввод");
+                                return;
+                            }
+                            if (!int.TryParse(tmp[1], out int to) || to >= count_of_vertex) {
+                                MessageBox.Show($"Строка №{k + 1} имеет неверный формат, повторите ввод");
+                                return;
+                            }
+                            if (!int.TryParse(tmp[2], out int w) || w <= 0) {
+                                MessageBox.Show($"Строка №{k + 1} имеет неверный формат, повторите ввод");
+                                return;
+                            }
+                            data[v].Add(new Pair<int, int>(to, w));
+                        }
+                        graph = new Graph(data, count_of_vertex);
+                    } else {
+                        List<List<Pair<int, double>>> data = new List<List<Pair<int, double>>>();
+                        for (int i = 0; i < count_of_vertex; ++i) {
+                            data.Add(new List<Pair<int, double>>());
+                        }
+                        int k = 0;
+                        for (; !sr.EndOfStream; ++k) {
+                            string s = sr.ReadLine();
+                            bool f = true;
+                            foreach (char c in s) {
+                                if (c != ' ') {
+                                    f = false;
+                                    break;
+                                }
+                            }
+                            if (f) {
+                                continue;
+                            }
+                            string[] tmp = s.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                            if (tmp.Length != 3) {
+                                MessageBox.Show($"Строка №{k + 1} имеет неверный формат, повторите ввод");
+                                return;
+                            }
+                            if (!int.TryParse(tmp[0], out int v) || v >= count_of_vertex) {
+                                MessageBox.Show($"Строка №{k + 1} имеет неверный формат, повторите ввод");
+                                return;
+                            }
+                            if (!int.TryParse(tmp[1], out int to) || to >= count_of_vertex) {
+                                MessageBox.Show($"Строка №{k + 1} имеет неверный формат, повторите ввод");
+                                return;
+                            }
+                            if (!double.TryParse(tmp[2], out double w) || w <= 0) {
+                                MessageBox.Show($"Строка №{k + 1} имеет неверный формат, повторите ввод");
+                                return;
+                            }
+                            data[v].Add(new Pair<int, double>(to, w));
+                        }
+                        graph = new Graph(data, count_of_vertex);
+                    }
+                } catch (Exception ex){
+                    MessageBox.Show(ex.Message);
+                    return;
+                }
+            } else {
+                MessageBox.Show("Данный файл не существует");
+                return;
+            }
+            TimeLabel.Visible = true;
+            EndButton.Visible = true;
+            TimeTextBox.Visible = true;
+            CountOfMarkersLabel.Visible = true;
+            CountOfMarkersTextBox.Visible = true;
+            loadFromFile.Visible = false;
+            graphTypeButton.Visible = false;
+            textTypeButton.Visible = false;
+            selectTypeLabel.Visible = false;
+        }
+
+        private void saveGraphic_Click(object sender, EventArgs e) {
+            SaveFileDialog savedialog = new SaveFileDialog();
+            savedialog.Title = "Сохранить график как...";
+            savedialog.OverwritePrompt = true;
+            savedialog.CheckPathExists = true;
+            savedialog.Filter = "Image Files(*.BMP)|*.BMP|Image Files(*.JPG)|*.JPG|Image Files(*.GIF)|*.GIF|Image Files(*.PNG)|*.PNG|All files (*.*)|*.*";
+            savedialog.ShowHelp = true;
+            if (savedialog.ShowDialog() == DialogResult.OK) {
+                try {
+                    var image = _zedGraph_.GetImage();
+                    image.Save(savedialog.FileName, System.Drawing.Imaging.ImageFormat.Jpeg);
+                }
+                catch {
+                    MessageBox.Show("Невозможно сохранить изображение", "Ошибка",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+        private void OneMarkerButton_Click(object sender, EventArgs e) {
+            TimeLabel.Visible = false;
+            EndButton.Visible = false;
+            TimeTextBox.Visible = false;
+            CountOfMarkersLabel.Visible = false;
+            CountOfMarkersTextBox.Visible = false;
+            DrawGraph(graph, time_, markers_count_);
+            ChangeDataListBox();
+            DataListBox.Visible = true;
+            _zedGraph_.Visible = true;
+            saveGraphic.Visible = true;
+            someMarkersButton.Visible = false;
+            OneMarkerButton.Visible = false;
+            SelectMarkersLabel.Visible = false;
+        }
+
+        private void someMarkersButton_Click(object sender, EventArgs e) {
+            string cm;
+            do {
+                cm = Microsoft.VisualBasic.Interaction.InputBox("Введите, на какое ребро и сколько маркеров запускать " +
+                    "в формате {исходящая вершина} {вершина, в которую приходит ребро} {количество маркеров}");
+                var edge_ = cm.Split(' ');
+                string hint = "неверный формат";
+                if (edge_.Length != 3) {
+                    MessageBox.Show(hint);
+                    return;
+                }
+                if (!int.TryParse(edge_[0], out int f_v) || f_v < 0 || f_v >= graph.CountOfVertex_) {
+                    MessageBox.Show(hint);
+                    return;
+                }
+                if (!int.TryParse(edge_[1], out int s_v) || s_v < 0 || s_v >= graph.CountOfVertex_) {
+                    MessageBox.Show(hint);
+                    return;
+                }
+                if (!int.TryParse(edge_[2], out int k_m) || k_m < 0) {
+                    MessageBox.Show(hint);
+                    return;
+                }
+                if (!graph.EdgeExist(f_v, s_v)) {
+                    MessageBox.Show(hint + ". Такого ребра не существует");
+                    return;
+                }
+                graph.markers_imp = new int[3] { f_v, s_v, k_m };
+                graph.markers_impuls = false;
+            } while (false);
+            DrawGraph(graph, time_, markers_count_);
+            ChangeDataListBox();
+            DataListBox.Visible = true;
+            _zedGraph_.Visible = true;
+            saveGraphic.Visible = true;
+            someMarkersButton.Visible = false;
+            OneMarkerButton.Visible = false;
+            SelectMarkersLabel.Visible = false;
+        }
+
         private void graphTypeButton_Click(object sender, EventArgs e) {
             graphTypeButton.Visible = false;
             textTypeButton.Visible = false;
             selectTypeLabel.Visible = false;
-            Whole.Visible = true;
-            Real.Visible = true;
-            ChooseLabel.Visible = true;
-            textOrGraphic = false;
+            loadFromFile.Visible = false;
+            sheet.Visible = true;
+            selectButton.Visible = true;
+            drawEdgeButton.Visible = true;
+            drawVertexButton.Visible = true;
+            deleteButton.Visible = true;
+            deleteALLButton.Visible = true;
+            ReadyButton.Visible = true;
+            InitializePictureBox();
         }
     }
 }

@@ -137,7 +137,7 @@ namespace WF {
             }
             CountOfVertex = n;
             if (!StrongConnectivityCheck()) {
-                throw new ArgumentOutOfRangeException("Граф должен быть связным");
+                throw new ArgumentOutOfRangeException("Граф должен быть сильно-связным");
             }
         }
 
@@ -230,9 +230,9 @@ namespace WF {
         /// </returns>
         public int[] GetCountOfMarkers(int Time, int CountOfMarkersToGo) {
             if (DoubleData == null) {
-                return GetCountOfMarkersWhole(Time, CountOfMarkersToGo);
+                return GetCountOfMarkersWhole(Time, CountOfMarkersToGo - 1);
             }
-            return GetCountOfMarkersReal(Time, CountOfMarkersToGo);
+            return GetCountOfMarkersReal(Time, CountOfMarkersToGo - 1);
         }
 
         /// <summary>
@@ -270,8 +270,7 @@ namespace WF {
                 Counter[i] = 0;
             }
             int NowCount = CountOfEdges;
-
-            for (int i = 1; i < Time; ++i) {
+            for (int i = 0; i < Time; ++i) {
                 Result[i] = NowCount;
                 for (int j = 0; j < CountOfVertex; ++j) {
                     for (int z = 0; z < Markers[j].Count; ++z) {
@@ -280,8 +279,11 @@ namespace WF {
                     int count = Markers[j].RemoveAll((k) => k == 0);
                     Counter[j] += count;
                     Result[i] -= count;
-                    count = Update(j, Condition(Counter[j]), Markers);
-                    Result[i] += count;
+                    int count_ = Update(j, Condition(Counter[j]), Markers);
+                    if (count_ != 0) {
+                        Counter[j] -= count;
+                    }
+                    Result[i] += count_;
                 }
                 NowCount = Result[i];
             }
@@ -324,7 +326,7 @@ namespace WF {
             }
             int NowCount = CountOfEdges;
 
-            for (int i = 1; i < Result.Length; ++i) {
+            for (int i = 0; i < Result.Length; ++i) {
                 Result[i] = NowCount;
                 for (int j = 0; j < CountOfVertex; ++j) {
                     for (int z = 0; z < Markers[j].Count; ++z) {
@@ -333,7 +335,10 @@ namespace WF {
                     int count = Markers[j].RemoveAll((k) => k < 0.00000000001);
                     Counter[j] += count;
                     Result[i] -= count;
-                    count = Update(j, Condition(Counter[j]), Markers);
+                    int count_ = Update(j, Condition(Counter[j]), Markers);
+                    if (count_ != 0) {
+                        Counter[j] -= count;
+                    }
                     Result[i] += count;
                 }
                 NowCount = Result[i];
@@ -584,6 +589,31 @@ namespace WF {
             get {
                 return ResearchTime;
             }
+        }
+
+        public bool markers_impuls = true;
+        public int[] markers_imp;
+
+        public bool EdgeExist(int v1, int v2) {
+            return Matrix[v1][v2] != 0;
+        }
+
+        public int GetWeightWhole(int v1, int v2) {
+            foreach (var p in IntData[v1]) {
+                if (p.First == v2) {
+                    return p.Second;
+                }
+            }
+            return 0;
+        }
+
+        public double GetWeightReal(int v1, int v2) {
+            foreach (var p in DoubleData[v1]) {
+                if (p.First == v2) {
+                    return p.Second;
+                }
+            }
+            return 0;
         }
     }
 }
