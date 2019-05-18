@@ -1029,13 +1029,13 @@ namespace WF {
                     return;
                 }
                 if (flag) {
-                    if (!int.TryParse(edge_[3], out int interv)) {
+                    if (!int.TryParse(edge_[3], out int interv) || interv <= 0) {
                         MessageBox.Show(hint);
                         return;
                     }
                     graph.WholeInterval = new Graph.Lauching<int>(f_v, s_v, k_m, interv); 
                 } else {
-                    if (!double.TryParse(edge_[3], out double interv)) {
+                    if (!double.TryParse(edge_[3], out double interv) || interv < 0.0001) {
                         MessageBox.Show(hint);
                         return;
                     }
