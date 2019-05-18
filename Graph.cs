@@ -264,18 +264,46 @@ namespace WF {
                 Markers.Add(new List<int>());
             }
             for (int i = 0; i < CountOfVertex; ++i) {
-                for (int j = 0; j < IntData[i].Count; ++j) {
-                    Markers[IntData[i][j].First].Add(IntData[i][j].Second);
-                }
                 Counter[i] = 0;
             }
+            int t = 0;
+            int _count_ = 0;
+            int f_v = 0, s_v = 0;
+            int w = 0;
+            if (markers_impuls) {
+                for (int i = 0; i < CountOfVertex; ++i) {
+                    for (int j = 0; j < IntData[i].Count; ++j) {
+                        Markers[IntData[i][j].First].Add(IntData[i][j].Second);
+                    }
+                }
+            } else {
+                f_v = WholeInterval.first_vertex;
+                s_v = WholeInterval.second_vertex;
+                w = GetWeightWhole(f_v, s_v);
+                Markers[s_v].Add(w);
+                t = WholeInterval.interval;
+                _count_ = WholeInterval.count;
+                --_count_;
+            }
             int NowCount = CountOfEdges;
+            if (markers_impuls) {
+                NowCount = CountOfEdges;
+            } else {
+                NowCount = 1;
+            }
             for (int i = 0; i < Time; ++i) {
                 Result[i] = NowCount;
-                for (int j = 0; j < CountOfVertex; ++j) {
-                    for (int z = 0; z < Markers[j].Count; ++z) {
-                        --Markers[j][z];
+                if (!markers_impuls) {
+                    if (t == 0) {
+                        if (_count_ != 0) {
+                            Markers[s_v].Add(w);
+                            ++Result[i];
+                            --_count_;
+                            t = WholeInterval.interval;
+                        } 
                     }
+                }
+                for (int j = 0; j < CountOfVertex; ++j) {
                     int count = Markers[j].RemoveAll((k) => k == 0);
                     Counter[j] += count;
                     Result[i] -= count;
@@ -284,8 +312,14 @@ namespace WF {
                         Counter[j] -= count;
                     }
                     Result[i] += count_;
+                    for (int z = 0; z < Markers[j].Count; ++z) {
+                        --Markers[j][z];
+                    }
                 }
                 NowCount = Result[i];
+                if (!markers_impuls) {
+                    --t;
+                }
             }
             return Result;
         }
@@ -319,19 +353,47 @@ namespace WF {
                 Markers.Add(new List<double>());
             }
             for (int i = 0; i < CountOfVertex; ++i) {
-                for (int j = 0; j < DoubleData[i].Count; ++j) {
-                    Markers[DoubleData[i][j].First].Add(DoubleData[i][j].Second);
-                }
                 Counter[i] = 0;
             }
+            double t = 0;
+            int _count_ = 0;
+            int f_v = 0, s_v = 0;
+            double w = 0;
+            if (markers_impuls) {
+                for (int i = 0; i < CountOfVertex; ++i) {
+                    for (int j = 0; j < DoubleData[i].Count; ++j) {
+                        Markers[DoubleData[i][j].First].Add(DoubleData[i][j].Second);
+                    }
+                }
+            } else {
+                f_v = RealInterval.first_vertex;
+                s_v = RealInterval.second_vertex;
+                w = GetWeightReal(f_v, s_v);
+                Markers[s_v].Add(w);
+                t = RealInterval.interval;
+                _count_ = RealInterval.count;
+                --_count_;
+            }
             int NowCount = CountOfEdges;
-
+            if (markers_impuls) {
+                NowCount = CountOfEdges;
+            }
+            else {
+                NowCount = 1;
+            }
             for (int i = 0; i < Result.Length; ++i) {
                 Result[i] = NowCount;
-                for (int j = 0; j < CountOfVertex; ++j) {
-                    for (int z = 0; z < Markers[j].Count; ++z) {
-                        Markers[j][z] -= 0.01;
+                if (!markers_impuls) {
+                    if (t < 0.00001) {
+                        if (_count_ != 0) {
+                            Markers[s_v].Add(w);
+                            ++Result[i];
+                            --_count_;
+                            t = WholeInterval.interval;
+                        }
                     }
+                }
+                for (int j = 0; j < CountOfVertex; ++j) {
                     int count = Markers[j].RemoveAll((k) => k < 0.00000000001);
                     Counter[j] += count;
                     Result[i] -= count;
@@ -340,8 +402,14 @@ namespace WF {
                         Counter[j] -= count;
                     }
                     Result[i] += count;
+                    for (int z = 0; z < Markers[j].Count; ++z) {
+                        Markers[j][z] -= 0.01;
+                    }
                 }
                 NowCount = Result[i];
+                if (!markers_impuls) {
+                    t -= 0.01;
+                }
             }
             return Result;
         }
@@ -592,7 +660,22 @@ namespace WF {
         }
 
         public bool markers_impuls = true;
-        public int[] markers_imp;
+
+        public struct Lauching<T> {
+            public Lauching(int f_v, int s_v, int c, T inter) {
+                first_vertex = f_v;
+                second_vertex = s_v;
+                count = c;
+                interval = inter;
+            }
+
+            public readonly int first_vertex;
+            public readonly int second_vertex;
+            public readonly int count;
+            public readonly T interval;
+        }
+        public Lauching<int> WholeInterval;
+        public Lauching<double> RealInterval;
 
         public bool EdgeExist(int v1, int v2) {
             return Matrix[v1][v2] != 0;

@@ -625,6 +625,9 @@ namespace WF {
                                     int w_in;
                                     do {
                                         weight_input = Microsoft.VisualBasic.Interaction.InputBox("Введите вес данного ребра");
+                                        if (weight_input.Length == 0) {
+                                            return;
+                                        }
                                         if (!int.TryParse(weight_input, out w_in) || w_in <= 0) {
                                             MessageBox.Show("Ребро графа должно иметь целый положительный вес");
                                         }
@@ -635,6 +638,9 @@ namespace WF {
                                     double w_in;
                                     do {
                                         weight_input = Microsoft.VisualBasic.Interaction.InputBox("Введите вес данного ребра");
+                                        if (weight_input.Length == 0) {
+                                            return;
+                                        }
                                         if (!double.TryParse(weight_input, out w_in) || w_in < 0.00001) {
                                             MessageBox.Show("Ребро графа должно иметь положительный вес");
                                         }
@@ -840,6 +846,9 @@ namespace WF {
 
         private void loadFromFile_Click(object sender, EventArgs e) {
             string path = Microsoft.VisualBasic.Interaction.InputBox("Введите название файла формата .gr");
+            if (path.Length == 0) {
+                return;
+            }
             if (path.Length < 3) {
                 MessageBox.Show("Неверный формат");
                 return;
@@ -990,11 +999,16 @@ namespace WF {
         private void someMarkersButton_Click(object sender, EventArgs e) {
             string cm;
             do {
-                cm = Microsoft.VisualBasic.Interaction.InputBox("Введите, на какое ребро и сколько маркеров запускать " +
-                    "в формате {исходящая вершина} {вершина, в которую приходит ребро} {количество маркеров}");
+                cm = Microsoft.VisualBasic.Interaction.InputBox("Введите, на какое ребро, сколько маркеров запускать и с каким интервалом" +
+                    "в формате {исходящая вершина} {вершина, в которую приходит ребро} {количество маркеров} {интервал}\n"
+                    + "Если ребра имеют целый вес, интервал может быть только целый\n"
+                    + "Вершины нумеруются с нуля");
+                if (cm.Length == 0) {
+                    return;
+                }
                 var edge_ = cm.Split(' ');
                 string hint = "неверный формат";
-                if (edge_.Length != 3) {
+                if (edge_.Length != 4) {
                     MessageBox.Show(hint);
                     return;
                 }
@@ -1014,7 +1028,19 @@ namespace WF {
                     MessageBox.Show(hint + ". Такого ребра не существует");
                     return;
                 }
-                graph.markers_imp = new int[3] { f_v, s_v, k_m };
+                if (flag) {
+                    if (!int.TryParse(edge_[3], out int interv)) {
+                        MessageBox.Show(hint);
+                        return;
+                    }
+                    graph.WholeInterval = new Graph.Lauching<int>(f_v, s_v, k_m, interv); 
+                } else {
+                    if (!double.TryParse(edge_[3], out double interv)) {
+                        MessageBox.Show(hint);
+                        return;
+                    }
+                    graph.RealInterval = new Graph.Lauching<double>(f_v, s_v, k_m, interv);
+                }
                 graph.markers_impuls = false;
             } while (false);
             DrawGraph(graph, time_, markers_count_);
