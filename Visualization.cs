@@ -82,11 +82,9 @@ namespace WF {
         /// <param name="e"></param>
         private void Start_button(object sender, EventArgs e) {
             button_start.Visible = false;
-            //
             ChooseLabel.Visible = true;
             Real.Visible = true;
             Whole.Visible = true;
-            //
         }
 
         /// <summary>
@@ -111,7 +109,8 @@ namespace WF {
             for (int i = 0; i < count.Length; ++i) {
                 if (flag) {
                     points.Add(i, count[i]);
-                } else {
+                }
+                else {
                     points.Add(i * 1.0 / 100, count[i]);
                 }
             }
@@ -124,7 +123,8 @@ namespace WF {
             G = new DrawGraph(sheet.Width, sheet.Height);
             if (flag) {
                 E_Whole = new List<Edge<int>>();
-            } else {
+            }
+            else {
                 E_Real = new List<Edge<double>>();
             }
             sheet.Image = G.GetBitmap();
@@ -192,30 +192,10 @@ namespace WF {
             Real.Visible = false;
             ChooseLabel.Visible = false;
             flag = false;
-            /*
-            OneMarkerButton.Visible = true;
-            someMarkersButton.Visible = true;
-            SelectMarkersLabel.Visible = true;
-            */
-                //
             graphTypeButton.Visible = true;
             textTypeButton.Visible = true;
             selectTypeLabel.Visible = true;
             loadFromFile.Visible = true;
-            /*if (textOrGraphic) {
-                MainLabel.Visible = true;
-                GraphData.Visible = true;
-                BeginButton.Visible = true;
-            } else {
-                sheet.Visible = true;
-                selectButton.Visible = true;
-                drawEdgeButton.Visible = true;
-                drawVertexButton.Visible = true;
-                deleteButton.Visible = true;
-                deleteALLButton.Visible = true;
-                ReadyButton.Visible = true;
-                InitializePictureBox();
-            }*/
         }
 
         /// <summary>
@@ -232,20 +212,6 @@ namespace WF {
             textTypeButton.Visible = true;
             selectTypeLabel.Visible = true;
             loadFromFile.Visible = true;
-            /*if (textOrGraphic) {
-                MainLabel.Visible = true;
-                GraphData.Visible = true;
-                BeginButton.Visible = true;
-            } else {
-                sheet.Visible = true;
-                selectButton.Visible = true;
-                drawEdgeButton.Visible = true;
-                drawVertexButton.Visible = true;
-                deleteButton.Visible = true;
-                deleteALLButton.Visible = true;
-                ReadyButton.Visible = true;
-                InitializePictureBox();
-            }*/
         }
 
         /// <summary>
@@ -258,7 +224,7 @@ namespace WF {
         /// Список смежности графа
         /// </returns>
         List<List<Pair<int, int>>> ParseWhole(out int CountOfVertex) {
-            var graphData = GraphData.Text.Split(new char[] {'\n'}, StringSplitOptions.RemoveEmptyEntries);
+            var graphData = GraphData.Text.Split(new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
             if (graphData.Length == 0) {
                 throw new FormatException("Вы ничего не ввели");
             }
@@ -380,13 +346,6 @@ namespace WF {
             TimeTextBox.Visible = false;
             CountOfMarkersLabel.Visible = false;
             CountOfMarkersTextBox.Visible = false;
-            /*
-            DrawGraph(graph, time, markers_count);
-            ChangeDataListBox();
-            DataListBox.Visible = true;
-            _zedGraph_.Visible = true;
-            saveGraphic.Visible = true;
-            */
         }
 
         /// <summary>
@@ -482,7 +441,8 @@ namespace WF {
             G.clearSheet();
             if (flag) {
                 G.drawALLGraph(V, E_Whole);
-            } else {
+            }
+            else {
                 G.drawALLGraph(V, E_Real);
             }
             sheet.Image = G.GetBitmap();
@@ -497,7 +457,8 @@ namespace WF {
             G.clearSheet();
             if (flag) {
                 G.drawALLGraph(V, E_Whole);
-            } else {
+            }
+            else {
                 G.drawALLGraph(V, E_Real);
             }
             sheet.Image = G.GetBitmap();
@@ -510,8 +471,9 @@ namespace WF {
             deleteButton.Enabled = true;
             G.clearSheet();
             if (flag) {
-                G.drawALLGraph(V, E_Whole); 
-            } else {
+                G.drawALLGraph(V, E_Whole);
+            }
+            else {
                 G.drawALLGraph(V, E_Real);
             }
             sheet.Image = G.GetBitmap();
@@ -546,7 +508,8 @@ namespace WF {
                 V.Clear();
                 if (flag) {
                     E_Whole.Clear();
-                } else {
+                }
+                else {
                     E_Real.Clear();
                 }
                 G.clearSheet();
@@ -579,7 +542,8 @@ namespace WF {
                     V.Clear();
                     if (flag) {
                         E_Whole.Clear();
-                    } else {
+                    }
+                    else {
                         E_Real.Clear();
                     }
                     graph = null;
@@ -599,7 +563,8 @@ namespace WF {
                         G.clearSheet();
                         return;
                     }
-                } else {
+                }
+                else {
                     if (E_Real.Count == 200) {
                         E_Real.Clear();
                         V.Clear();
@@ -649,7 +614,8 @@ namespace WF {
                                 }
                                 if (flag) {
                                     G.drawEdge(V[selected1], V[selected2], E_Whole[E_Whole.Count - 1], E_Whole.Count - 1);
-                                } else {
+                                }
+                                else {
                                     G.drawEdge(V[selected1], V[selected2], E_Real[E_Real.Count - 1], E_Real.Count - 1);
                                 }
                                 selected1 = -1;
@@ -686,7 +652,8 @@ namespace WF {
                                     if (E_Whole[j].v2 > i) E_Whole[j].v2--;
                                 }
                             }
-                        } else {
+                        }
+                        else {
                             for (int j = 0; j < E_Real.Count; j++) {
                                 if ((E_Real[j].v1 == i) || (E_Real[j].v2 == i)) {
                                     E_Real.RemoveAt(j);
@@ -729,7 +696,8 @@ namespace WF {
                                 }
                             }
                         }
-                    } else {
+                    }
+                    else {
                         for (int i = 0; i < E_Real.Count; i++) {
                             if (E_Real[i].v1 == E_Real[i].v2) //если это петля
                             {
@@ -780,7 +748,8 @@ namespace WF {
             saveButton.Visible = false;
             if (flag) {
                 graph = new Graph(G.GetAdjacencyList(V.Count, E_Whole), V.Count);
-            } else {
+            }
+            else {
                 graph = new Graph(G.GetAdjacencyList(V.Count, E_Real), V.Count);
             }
             TimeLabel.Visible = true;
@@ -809,7 +778,7 @@ namespace WF {
                 }
                 List<string> result = new List<string>();
                 if (E_Whole != null) {
-                    
+
                     var matr = G.GetAdjacencyList(V.Count, E_Whole);
                     result.Add(V.Count.ToString());
                     for (int i = 0; i < matr.Count; ++i) {
@@ -817,7 +786,8 @@ namespace WF {
                             result.Add(i.ToString() + ' ' + matr[i][j].First.ToString() + ' ' + matr[i][j].Second.ToString());
                         }
                     }
-                } else {
+                }
+                else {
                     var matr = G.GetAdjacencyList(V.Count, E_Real);
                     result.Add(V.Count.ToString());
                     for (int i = 0; i < matr.Count; ++i) {
@@ -903,7 +873,8 @@ namespace WF {
                             data[v].Add(new Pair<int, int>(to, w));
                         }
                         graph = new Graph(data, count_of_vertex);
-                    } else {
+                    }
+                    else {
                         List<List<Pair<int, double>>> data = new List<List<Pair<int, double>>>();
                         for (int i = 0; i < count_of_vertex; ++i) {
                             data.Add(new List<Pair<int, double>>());
@@ -942,11 +913,13 @@ namespace WF {
                         }
                         graph = new Graph(data, count_of_vertex);
                     }
-                } catch (Exception ex){
+                }
+                catch (Exception ex) {
                     MessageBox.Show(ex.Message);
                     return;
                 }
-            } else {
+            }
+            else {
                 MessageBox.Show("Данный файл не существует");
                 return;
             }
@@ -1033,8 +1006,9 @@ namespace WF {
                         MessageBox.Show(hint);
                         return;
                     }
-                    graph.WholeInterval = new Graph.Lauching<int>(f_v, s_v, k_m, interv); 
-                } else {
+                    graph.WholeInterval = new Graph.Lauching<int>(f_v, s_v, k_m, interv);
+                }
+                else {
                     if (!double.TryParse(edge_[3], out double interv) || interv < 0.0001) {
                         MessageBox.Show(hint);
                         return;
